@@ -3,7 +3,7 @@
   "short_name": "PW",
   "start_url": "/PW2/",
   "scope": "/PW2/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#150307",
   "theme_color": "#2a0a11",
   "icons": [
