@@ -1,97 +1,162 @@
-(function () {
-    const loader = document.getElementById('pageloader');
-    const MIN = 2500;   // минимальное отображение
-    const HARD_CAP = 5000; // максимум
-    const t0 = Date.now();
+function $(id) { return document.getElementById(id); }
 
-    if (loader) {
-        document.documentElement.classList.add('lock');
-        document.body.classList.add('lock');
-    }
+// PAGE LOADER
+(function(){
+    const loader = $('pageloader');
+    const MIN = 1200;
+    const HARD = 3500;
+    const t0 = performance.now();
 
-    function reveal() {
-        if (!loader) return;
+    function reveal(){
         loader.classList.add('hide');
         document.documentElement.classList.remove('lock');
         document.body.classList.remove('lock');
-        setTimeout(() => loader.remove(), 650);
+        setTimeout(()=> loader.remove(),600);
     }
 
-    function finish() {
-        const dt = Date.now() - t0;
-        const wait = Math.max(0, MIN - dt);
+    window.addEventListener('load', ()=>{
+        const wait = Math.max(0, MIN - (performance.now()-t0));
         setTimeout(reveal, wait);
-    }
+    }, {once:true});
 
-    if (loader) {
-        window.addEventListener('load', finish, { once: true });
-        setTimeout(reveal, HARD_CAP);
-    }
+    setTimeout(reveal, HARD);
+
 })();
-// ========== HOME RENDER ==========
+///////////////////////////////
 
-function renderHomeAnalytics() {
-    // заглушки
-    $('stat_words_learned').textContent = 0;
-    $('stat_cards_seen').textContent = 0;
-    $('stat_tests_done').textContent = 0;
 
-    // словари
-    if (window.LESSONS) {
-        $('stat_dicts_total').textContent = Object.keys(LESSONS).length;
-    }
+// QUOTES — работает
+document.addEventListener("DOMContentLoaded", ()=>{
+    const q=[
+        "Как настроение у моей девочки? ❤️",
+        "Сделаем этот английский на раз-два ✨",
+        "Ты моё маленькое счастье 💗",
+        "Что сегодня учим, солнышко? 🌸",
+        "У тебя всё получится 💕",
+    ];
+    const el=document.querySelector(".hero-sub");
+    el.textContent = q[Math.floor(Math.random()*q.length)];
+});
 
-    // любимые слова (пусто)
-    $('home_favorite_words').innerHTML = `
-        <li>— пока пусто —</li>
-    `;
-}
-//BOTTOM NAV BAR
-function setActiveTab(tab) {
-    document.querySelectorAll('.bnb-item').forEach(btn => {
-        btn.classList.toggle('is-active', btn.dataset.tab === tab);
+
+// STATE
+let currentLesson = JSON.parse(localStorage.getItem("pw_current_lesson")) || null;
+
+
+// LOCK NAV IF NO LESSON
+function updateBNBState(){
+    document.querySelectorAll(".bnb-item").forEach(btn=>{
+        if(btn.dataset.tab==="home") return;
+
+        if(currentLesson) btn.classList.remove("disabled");
+        else btn.classList.add("disabled");
     });
 }
 
-function switchTab(tab) {
-    // скрываем все экраны
-    document.querySelectorAll('.screen').forEach(s => {
-        s.classList.add('hidden');
-    });
 
-    // показываем нужный
-    const el = document.getElementById(tab);
-    if (el) el.classList.remove('hidden');
+// TAB SWITCH
+function switchTab(tab){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.add('hidden'));
+    $(tab).classList.remove('hidden');
 
-    setActiveTab(tab);
+    document.querySelectorAll('.bnb-item')
+        .forEach(b=> b.classList.toggle('is-active', b.dataset.tab===tab));
 }
 
-// init
-document.querySelectorAll('.bnb-item').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.querySelectorAll('.bnb-item').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        if(btn.classList.contains("disabled")) return;
         switchTab(btn.dataset.tab);
     });
 });
-document.addEventListener("DOMContentLoaded", () => {
-    const pwQuotes = [
-        "Как настроение у моей девочки? ❤️ Всё получится!",
-        "Что сегодня учим, солнышко? 🌸 Я в тебя верю!",
-        "Ты сильнее, чем думаешь! Ты моё вдохновение ✨",
-        "Сделано с любовью, твой Владушка 💫",
-        "Не забывай улыбаться, и даже самые трудные слова тебе покорятся 💕",
-        "Сделаем этот английский на раз-два с любимой ✨",
-        "Ты моё маленькое счастье! Твой Владушка 💗",
-        "У тебя всё получится, моя девочка! Ты мой цветочек 🌷",
-        "Каждое новое выученное словечко — как маленькая победа! 🌙",
-        "Мне нравится наблюдать, как ты становишься лучше день за днём 💞"
-    ];
 
-    const el = document.querySelector(".hero-sub");
-    if (el) el.textContent = pwQuotes[Math.floor(Math.random() * pwQuotes.length)];
+
+// LESSON PICKER
+const trigger = $("lessonTrigger");
+const dropdown = $("lessonDropdown");
+const desc = $("lessonDesc");
+const triggerText = $("lessonTriggerText");
+
+// render dictionary list
+function renderLessonList(){
+    dropdown.innerHTML = "";
+
+    Object.entries(LESSONS).forEach(([key, lesson])=>{
+        const div = document.createElement("div");
+        div.className = "lesson-option";
+        div.dataset.key = key;
+        div.innerHTML = `<span>${lesson.name}</span><small>${lesson.description}</small>`;
+        dropdown.appendChild(div);
+    });
+}
+
+// open/close
+trigger.addEventListener("click",()=>{
+    dropdown.classList.toggle("hidden");
+});
+
+// choose
+dropdown.addEventListener("click",(e)=>{
+    const opt = e.target.closest(".lesson-option");
+    if(!opt) return;
+
+    currentLesson = LESSONS[opt.dataset.key];
+
+    triggerText.textContent = currentLesson.name;
+    desc.textContent = currentLesson.description;
+
+    dropdown.classList.add("hidden");
+
+    localStorage.setItem("pw_current_lesson", JSON.stringify(currentLesson));
+    updateBNBState();
 });
 
 
-//REGISTER SW JS
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/PW2/sw.js");
+// INIT
+function initHome(){
+    
+    $("stat_dicts_total").textContent = Object.keys(LESSONS).length;
+    $("home_favorite_words").innerHTML = `<li>— пока пусто —</li>`;
+
+    renderLessonList();
+    renderLatestLesson();
+
+    if(currentLesson){
+        triggerText.textContent = currentLesson.name;
+        desc.textContent = currentLesson.description;
+    }
+    updateBNBState();
+}
+
+initHome();
+switchTab("home");
+// ===================== NEW WORDS PANEL =====================
+function getLastLesson(){
+    const keys = Object.keys(LESSONS);
+    return LESSONS[keys[keys.length - 1]];
+}
+
+function renderLatestLesson(){
+    const card = document.getElementById("latestLessonCard");
+    const lesson = getLastLesson();
+    if(!lesson){ return; }
+
+    card.innerHTML = `
+        <div class="new-lesson-card-title">${lesson.name}</div>
+        <div class="new-lesson-card-desc">${lesson.description}</div>
+    `;
+    card.classList.remove("hidden");
+
+    card.onclick = ()=>{
+        if(currentLesson && currentLesson.name === lesson.name){
+            return; // выбран тот же урок — игнор
+        }
+
+        currentLesson = lesson;
+        triggerText.textContent = lesson.name;
+        desc.textContent = lesson.description;
+
+        updateBNBState();
+        localStorage.setItem("pw_current_lesson", JSON.stringify(currentLesson));
+    };
 }

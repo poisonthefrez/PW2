@@ -442,3 +442,159 @@ body.lock {
         padding:.65rem 1.1rem;
     }
 }
+
+/* ===========================
+   LESSON PICKER
+=========================== */
+
+.lesson-trigger{
+    margin-top:1.2rem;
+    padding: .85rem 1.2rem;
+    width:100%;
+    max-width:420px;
+
+    border-radius:16px;
+    font-size:1rem;
+    font-weight:600;
+
+    background: linear-gradient(150deg,rgba(255,100,180,.14),rgba(10,0,10,.85));
+    border:1px solid rgba(255,130,200,.28);
+    color:#ffe9f5;
+
+    backdrop-filter: blur(12px);
+    box-shadow:
+        0 0 10px rgba(255,60,140,.12),
+        inset 0 0 12px rgba(255,80,180,.05);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    transition:.25s ease;
+}
+
+.lesson-trigger:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,150,220,.45);
+}
+
+.lesson-trigger:active{
+    transform:translateY(1px) scale(.97);
+}
+
+/* Dropdown */
+.lesson-dropdown{
+    margin-top:.8rem;
+    width:100%;
+    max-width:420px;
+
+    background:linear-gradient(170deg,rgba(255,60,160,.14),rgba(15,0,15,.92));
+    border:1px solid rgba(255,130,210,.22);
+
+    border-radius:18px;
+    backdrop-filter:blur(18px);
+    box-shadow:
+        0 10px 22px rgba(0,0,0,.55),
+        inset 0 0 14px rgba(255,70,170,.08);
+
+    padding:.8rem .6rem;
+
+    display:flex;
+    flex-direction:column;
+    gap:.35rem;
+}
+
+/* Item */
+.lesson-option{
+    padding:.8rem 1rem;
+    border-radius:14px;
+
+    background:rgba(255,100,200,.08);
+    border:1px solid rgba(255,100,200,.15);
+
+    font-size:.9rem;
+    text-align:left;
+    cursor:pointer;
+
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+
+    transition:.25s ease;
+}
+
+.lesson-option span{
+    font-weight:600;
+    color:#ffd8ef;
+}
+
+.lesson-option small{
+    font-size:.78rem;
+    opacity:.8;
+}
+
+.lesson-option:hover{
+    transform:translateX(4px);
+    background:rgba(255,100,200,.18);
+    border-color:rgba(255,150,200,.32);
+}
+/* ===============================
+   DISABLED BNB ITEMS
+=============================== */
+.bnb-item.disabled{
+    opacity:.35;
+    filter:blur(1px) saturate(40%);
+    pointer-events:none;
+}
+
+/* lesson dropdown fixed-layer style improve */
+.lesson-dropdown{
+    max-height:260px;
+    overflow-y:auto;
+}
+/* =======================================
+   NEW LESSON PANEL
+======================================= */
+
+.new-lesson-panel{
+    padding:1.4rem 1.4rem;
+    border-radius:18px;
+    background:linear-gradient(150deg,rgba(255,100,180,.12),rgba(10,0,10,.85));
+    border:1px solid rgba(255,140,200,.22);
+    box-shadow:
+        0 0 18px rgba(255,80,200,.08),
+        0 14px 34px rgba(0,0,0,.66),
+        inset 0 0 20px rgba(255,70,180,.06);
+}
+
+.new-lesson-card{
+    margin-top:.8rem;
+    padding:.9rem 1rem;
+    border-radius:16px;
+    background:rgba(255,100,200,.1);
+    border:1px solid rgba(255,120,200,.25);
+    backdrop-filter:blur(10px);
+
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+
+    cursor:pointer;
+    transition:.25s ease;
+}
+.new-lesson-card:hover{
+    transform:translateY(-2px) scale(1.02);
+    border-color:rgba(255,160,220,.45);
+}
+
+.new-lesson-card-title{
+    font-size:1.05rem;
+    font-weight:700;
+    color:#ffd8ef;
+}
+.new-lesson-card-desc{
+    font-size:.82rem;
+    opacity:.85;
+}
+
