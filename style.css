@@ -7,7 +7,7 @@ html, body {
     padding: 0;
     min-height: 100vh;
     overscroll-behavior: none;
-    
+
     background: radial-gradient(circle at top,
         #2a0a11 0%,
         #150307 55%,
@@ -239,7 +239,11 @@ body.lock {
     line-height:1.55;
     opacity:.88;
 }
-
+@media (max-width: 550px) and (max-height: 900px) {
+    .hero {
+        margin-top: -2.8rem;
+    }
+}
 /* =======================================
    HUD
 ======================================= */
