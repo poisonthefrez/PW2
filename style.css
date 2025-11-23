@@ -216,6 +216,9 @@ body.lock {
     width:100%;
     max-width:620px; /* iPad friendly */
 }
+#home {
+    padding-top: 0 !important;
+}
 
 /* =======================================
    HERO
