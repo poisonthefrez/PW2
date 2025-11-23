@@ -89,3 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const el = document.querySelector(".hero-sub");
     if (el) el.textContent = pwQuotes[Math.floor(Math.random() * pwQuotes.length)];
 });
+
+
+//REGISTER SW JS
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/PW2/sw.js");
+}

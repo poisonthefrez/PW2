@@ -1,0 +1,21 @@
+{
+  "name": "PocketWords",
+  "short_name": "PW",
+  "start_url": "/PW2/",
+  "scope": "/PW2/",
+  "display": "standalone",
+  "background_color": "#150307",
+  "theme_color": "#2a0a11",
+  "icons": [
+    {
+      "src": "/PW2/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/PW2/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
