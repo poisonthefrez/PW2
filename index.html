@@ -3,26 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="viewport-fit=cover">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- ВАЖНО! Только один viewport -->
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
+    <!-- iOS: Разрешить WebApp режим -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="/PW2/icons/icon-192.png">
 
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <!-- iOS: Статус бар поверх страницы -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- Самая важная штука для Dynamic Island -->
+    <meta name="theme-color" content="#150307">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Иконка для установок -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Подключение шрифтов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
 
-    <link rel="manifest" href="/PW2/manifest.json">
-
-    <meta name="theme-color" content="#150307">
-
-
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
 
     <title>PocketWords</title>
 </head>
+
 
 <body>
     <!--Page Loader-->
@@ -41,12 +52,6 @@
             </div>
         </div>
     </div>
-    <header class="pw-header">
-        <div class="pw-header-inner">
-            <h1 class="pw-header-title">PocketWords</h1>
-            <p class="pw-header-sub">Что учим сегодня?</p>
-        </div>
-    </header>
 
     <!--HOME-->
     <section id="home" class="screen home-os" tabindex="-1">
