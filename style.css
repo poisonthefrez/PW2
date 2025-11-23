@@ -1,12 +1,12 @@
 /* =======================================
-   BASE
+   BASE LAYOUT + SAFE AREA
 ======================================= */
+
 html, body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
 
-    /* Твой фирменный фон */
     background: radial-gradient(circle at top,
         #2a0a11 0%,
         #150307 55%,
@@ -23,13 +23,11 @@ html, body {
 
     user-select: none;
 
-    /* самое главное */
-    padding:
-        env(safe-area-inset-top)
-        env(safe-area-inset-right)
-        env(safe-area-inset-bottom)
-        env(safe-area-inset-left);
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
+
 
 /* НЕ ДУБЛИРУЕМ фон в body */
 body {
@@ -337,8 +335,9 @@ body.lock {
 }
 
 /* =======================================
-   BNB
+   BOTTOM NAVIGATION (BNB)
 ======================================= */
+
 .pw-bnb{
     position:fixed;
     left:0;right:0;bottom:0;
@@ -369,6 +368,7 @@ body.lock {
         0 0 24px rgba(255,40,200,.12),
         0 12px 32px rgba(0,0,0,.85);
 }
+
 .bnb-item{
     flex:1;height:48px;
     display:flex;flex-direction:column;
@@ -381,6 +381,7 @@ body.lock {
 }
 .bnb-item:hover:not(.is-active){color:#fff;transform:translateY(-1px);}
 .bnb-item:active{transform:translateY(1px)scale(.97);}
+
 .bnb-item.is-active{
     background:linear-gradient(145deg,rgba(60,10,35,.95),rgba(25,3,20,.95));
     color:#ff6ea8;
@@ -389,6 +390,7 @@ body.lock {
         0 8px 22px rgba(0,0,0,.9),
         0 0 14px rgba(245,100,180,.35);
 }
+
 .bnb-icon svg{
     width:22px;height:22px;
     stroke:currentColor;
@@ -399,15 +401,18 @@ body.lock {
 .bnb-item.is-active .bnb-icon svg{
     filter:drop-shadow(0 0 4px rgba(255,100,180,.4));
 }
+
 .bnb-label{
     font-size:.7rem;opacity:.92;
 }
 .bnb-item.is-active .bnb-label{
     font-size:.74rem;font-weight:600;
 }
+
 @supports(padding-bottom:env(safe-area-inset-bottom)){
     .pw-bnb{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
 }
+
 /* =======================================
    iPad Landscape
 ======================================= */
