@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
+
+    <title>PocketWords</title>
+</head>
+
+<body>
+    <!--Page Loader-->
+    <div id="pageloader" class="pw-loader">
+        <div class="pw-loader-inner">
+            <div class="pw-avatar-wrap">
+                <img src="img/avatar.png" alt="avatar">
+                <div class="pw-ring"></div>
+            </div>
+
+            <div class="pw-app-name">Pocketwords</div>
+            <div class="pw-subtitle">for Ulya</div>
+
+            <div class="pw-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    <section id="home" class="screen home-os" tabindex="-1">
+
+        <!-- HERO -->
+        <div class="hero">
+            <h1 class="hero-title">
+                Что учим <span>сегодня?</span>
+            </h1>
+            <p class="hero-sub">
+                Настроение PocketWords: удерживаем форму — учим легко.
+            </p>
+        </div>
+
+        <!-- STATS HUD -->
+        <section class="stats-hud">
+            <h2 class="section-title">📈 Прогресс</h2>
+            <div class="hud-grid">
+                <div class="hud-item">
+                    <span class="hud-value" id="stat_words_learned">0</span>
+                    <span class="hud-label">слов</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-value" id="stat_cards_seen">0</span>
+                    <span class="hud-label">карточек</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-value" id="stat_tests_done">0</span>
+                    <span class="hud-label">тестов</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- DICTIONARIES SECTION -->
+        <section class="dict-panel">
+            <h2 class="section-title">📚 Словари</h2>
+            <p class="panel-sub">
+                Активных словарей:
+                <span id="stat_dicts_total" class="panel-value">0</span>
+            </p>
+        </section>
+
+        <!-- FAVORITES TOKENS -->
+        <section class="fav-tokens">
+            <h2 class="section-title">❤️ Любимые слова</h2>
+            <ul id="home_favorite_words" class="token-list">
+                <!-- динамический рендер -->
+            </ul>
+        </section>
+
+    </section>
+
+
+    <!-- ===== Bottom Navigation Bar ===== -->
+    <nav class="pw-bnb" aria-label="Главная навигация">
+        <div class="bnb-shell">
+
+            <!-- HOME -->
+            <button class="bnb-item is-active" data-tab="home">
+                <span class="bnb-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M3 10.5L12 3l9 7.5v9a1 1 0 0 1-1 1h-5V14H10v6H4a1 1 0 0 1-1-1z" />
+                    </svg>
+                </span>
+                <span class="bnb-label">Home</span>
+            </button>
+
+            <!-- CARDS -->
+            <button class="bnb-item" data-tab="cards">
+                <span class="bnb-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="6" width="13" height="14" rx="2" />
+                        <rect x="8" y="4" width="13" height="14" rx="2" />
+                    </svg>
+                </span>
+                <span class="bnb-label">Cards</span>
+            </button>
+
+            <!-- TEST -->
+            <button class="bnb-item" data-tab="test">
+                <span class="bnb-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M9 12l2 2 4-4" />
+                    </svg>
+                </span>
+                <span class="bnb-label">Test</span>
+            </button>
+
+            <!-- DICT -->
+            <button class="bnb-item" data-tab="dict">
+                <span class="bnb-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 5a2 2 0 0 1 2-2h10a4 4 0 0 1 0 8H6v7a2 2 0 0 1-2-2z" />
+                        <path d="M6 11h8" />
+                    </svg>
+                </span>
+                <span class="bnb-label">Dict</span>
+            </button>
+
+        </div>
+    </nav>
+
+
+
+
+    <script src="app.js"></script>
+    <script src="data.js"></script>
+</body>
+
+</html>
