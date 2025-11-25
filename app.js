@@ -1,145 +1,208 @@
-function $(id) { return document.getElementById(id); }
+// ============================
+//   HELPERS
+// ============================
+function $(id) {
+    return document.getElementById(id);
+}
 
-// PAGE LOADER
-(function(){
+// ============================
+//   PAGE LOADER
+// ============================
+(function () {
     const loader = $('pageloader');
+    if (!loader) return;
+
     const MIN = 1200;
     const HARD = 3500;
     const t0 = performance.now();
 
-    function reveal(){
+    function reveal() {
         loader.classList.add('hide');
         document.documentElement.classList.remove('lock');
         document.body.classList.remove('lock');
-        setTimeout(()=> loader.remove(),600);
+        setTimeout(() => loader.remove(), 600);
     }
 
-    window.addEventListener('load', ()=>{
-        const wait = Math.max(0, MIN - (performance.now()-t0));
+    window.addEventListener('load', () => {
+        const dt = performance.now() - t0;
+        const wait = Math.max(0, MIN - dt);
         setTimeout(reveal, wait);
-    }, {once:true});
+    }, { once: true });
 
     setTimeout(reveal, HARD);
-
 })();
-///////////////////////////////
 
 
-// QUOTES — работает
-document.addEventListener("DOMContentLoaded", ()=>{
-    const q=[
-        "Как настроение у моей девочки? ❤️",
+// ============================
+//   HERO QUOTES
+// ============================
+document.addEventListener("DOMContentLoaded", () => {
+    const quotes = [
+        "Как настроение у моей девочки? ❤️ Всё получится!",
         "Сделаем этот английский на раз-два ✨",
         "Ты моё маленькое счастье 💗",
         "Что сегодня учим, солнышко? 🌸",
-        "У тебя всё получится 💕",
+        "У тебя всё получится, моя девочка 💕"
     ];
-    const el=document.querySelector(".hero-sub");
-    el.textContent = q[Math.floor(Math.random()*q.length)];
+    const el = document.querySelector(".hero-sub");
+    if (el) {
+        el.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    }
 });
 
 
-// STATE
-let currentLesson = JSON.parse(localStorage.getItem("pw_current_lesson")) || null;
+// ============================
+//   APP STATE (CURRENT LESSON)
+// ============================
+
+const STORAGE_LESSON_KEY = 'pw_current_lesson_key';
+
+// LESSONS приходит из data.js (глобальный объект)
+let currentLessonKey = localStorage.getItem(STORAGE_LESSON_KEY) || null;
+
+// если ключ больше не существует в базе — сбрасываем
+if (currentLessonKey && !Object.prototype.hasOwnProperty.call(LESSONS, currentLessonKey)) {
+    currentLessonKey = null;
+    localStorage.removeItem(STORAGE_LESSON_KEY);
+}
+
+function getCurrentLesson() {
+    return currentLessonKey ? LESSONS[currentLessonKey] : null;
+}
 
 
-// LOCK NAV IF NO LESSON
-function updateBNBState(){
-    document.querySelectorAll(".bnb-item").forEach(btn=>{
-        if(btn.dataset.tab==="home") return;
+// ============================
+//   BOTTOM NAV STATE
+// ============================
 
-        if(currentLesson) btn.classList.remove("disabled");
-        else btn.classList.add("disabled");
+function updateBNBState() {
+    document.querySelectorAll(".bnb-item").forEach(btn => {
+        const tab = btn.dataset.tab;
+        if (tab === "home") return;
+
+        if (currentLessonKey) {
+            btn.classList.remove("disabled");
+        } else {
+            btn.classList.add("disabled");
+        }
+    });
+}
+
+function switchTab(tab) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.add('hidden'));
+    const el = $(tab);
+    if (el) el.classList.remove('hidden');
+
+    document.querySelectorAll('.bnb-item').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.tab === tab);
     });
 }
 
 
-// TAB SWITCH
-function switchTab(tab){
-    document.querySelectorAll(".screen").forEach(s=>s.classList.add('hidden'));
-    $(tab).classList.remove('hidden');
+// ============================
+//   LESSON PICKER (HERO)
+// ============================
 
-    document.querySelectorAll('.bnb-item')
-        .forEach(b=> b.classList.toggle('is-active', b.dataset.tab===tab));
-}
-
-document.querySelectorAll('.bnb-item').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-        if(btn.classList.contains("disabled")) return;
-        switchTab(btn.dataset.tab);
-    });
-});
-
-
-// LESSON PICKER
 const trigger = $("lessonTrigger");
 const dropdown = $("lessonDropdown");
-const desc = $("lessonDesc");
+const lessonDescEl = $("lessonDesc");
 const triggerText = $("lessonTriggerText");
 
-// render dictionary list
-function renderLessonList(){
+function renderLessonList() {
+    if (!dropdown) return;
     dropdown.innerHTML = "";
 
-    Object.entries(LESSONS).forEach(([key, lesson])=>{
+    Object.entries(LESSONS).forEach(([key, lesson]) => {
         const div = document.createElement("div");
         div.className = "lesson-option";
         div.dataset.key = key;
-        div.innerHTML = `<span>${lesson.name}</span><small>${lesson.description}</small>`;
+        div.innerHTML = `
+            <span>${lesson.name}</span>
+            <small>${lesson.description}</small>
+        `;
         dropdown.appendChild(div);
     });
 }
 
-// open/close
-trigger.addEventListener("click",()=>{
-    dropdown.classList.toggle("hidden");
-});
+// открыть/закрыть dropdown
+if (trigger) {
+    trigger.addEventListener("click", () => {
+        dropdown.classList.toggle("hidden");
+    });
+}
 
-// choose
-dropdown.addEventListener("click",(e)=>{
-    const opt = e.target.closest(".lesson-option");
-    if(!opt) return;
+// выбор урока
+if (dropdown) {
+    dropdown.addEventListener("click", (e) => {
+        const opt = e.target.closest(".lesson-option");
+        if (!opt) return;
 
-    currentLesson = LESSONS[opt.dataset.key];
+        const key = opt.dataset.key;
+        const lesson = LESSONS[key];
+        if (!lesson) return;
 
-    triggerText.textContent = currentLesson.name;
-    desc.textContent = currentLesson.description;
+        currentLessonKey = key;
+        localStorage.setItem(STORAGE_LESSON_KEY, currentLessonKey);
 
-    dropdown.classList.add("hidden");
+        triggerText.textContent = lesson.name;
+        lessonDescEl.textContent = lesson.description;
 
-    localStorage.setItem("pw_current_lesson", JSON.stringify(currentLesson));
-    updateBNBState();
-});
+        dropdown.classList.add("hidden");
+        updateBNBState();
+    });
+}
 
 
-// INIT
-function initHome(){
-    
+// ============================
+//   HOME INIT + STATS + FAVS
+// ============================
+
+function initHome() {
+    // статистика (заглушки)
+    $("stat_words_learned").textContent = 0;
+    $("stat_cards_seen").textContent = 0;
+    $("stat_tests_done").textContent = 0;
+
+    // словари
     $("stat_dicts_total").textContent = Object.keys(LESSONS).length;
+
+    // любимые (пока пусто)
     $("home_favorite_words").innerHTML = `<li>— пока пусто —</li>`;
 
+    // список уроков в dropdown
     renderLessonList();
+
+    // блок "Новые слова"
     renderLatestLesson();
 
-    if(currentLesson){
-        triggerText.textContent = currentLesson.name;
-        desc.textContent = currentLesson.description;
+    // если при прошлой сессии уже был выбран словарь — подтягиваем его в UI
+    const savedLesson = getCurrentLesson();
+    if (savedLesson) {
+        triggerText.textContent = savedLesson.name;
+        lessonDescEl.textContent = savedLesson.description;
     }
+
+    // обновляем состояние навигации
     updateBNBState();
 }
 
-initHome();
-switchTab("home");
-// ===================== NEW WORDS PANEL =====================
-function getLastLesson(){
+
+// ============================
+//   NEW WORDS PANEL
+// ============================
+
+function getLastLessonKey() {
     const keys = Object.keys(LESSONS);
-    return LESSONS[keys[keys.length - 1]];
+    return keys[keys.length - 1];
 }
 
-function renderLatestLesson(){
+function renderLatestLesson() {
     const card = document.getElementById("latestLessonCard");
-    const lesson = getLastLesson();
-    if(!lesson){ return; }
+    if (!card) return;
+
+    const key = getLastLessonKey();
+    const lesson = LESSONS[key];
+    if (!lesson) return;
 
     card.innerHTML = `
         <div class="new-lesson-card-title">${lesson.name}</div>
@@ -147,16 +210,169 @@ function renderLatestLesson(){
     `;
     card.classList.remove("hidden");
 
-    card.onclick = ()=>{
-        if(currentLesson && currentLesson.name === lesson.name){
-            return; // выбран тот же урок — игнор
-        }
+    card.onclick = () => {
+        // если уже выбран этот же урок — ничего не делаем
+        if (currentLessonKey === key) return;
 
-        currentLesson = lesson;
+        currentLessonKey = key;
+        localStorage.setItem(STORAGE_LESSON_KEY, currentLessonKey);
+
         triggerText.textContent = lesson.name;
-        desc.textContent = lesson.description;
+        lessonDescEl.textContent = lesson.description;
 
         updateBNBState();
-        localStorage.setItem("pw_current_lesson", JSON.stringify(currentLesson));
     };
 }
+
+
+// ============================
+//   CARDS ENGINE
+// ============================
+
+let cardsState = null;
+
+// index per lesson
+function loadCardIndex(key) {
+    const v = localStorage.getItem(`pw_idx_${key}`);
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+function saveCardIndex(key, idx) {
+    localStorage.setItem(`pw_idx_${key}`, String(idx));
+}
+
+// favorites
+function loadFavs(key) {
+    try {
+        const raw = localStorage.getItem(`pw_fav_${key}`);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+function saveFavs(key, favs) {
+    localStorage.setItem(`pw_fav_${key}`, JSON.stringify(favs));
+}
+
+// запуск карточек
+function startCards() {
+    if (!currentLessonKey) {
+        alert("Сначала выбери словарь 📚");
+        return;
+    }
+
+    const lesson = LESSONS[currentLessonKey];
+    if (!lesson || !lesson.items || !lesson.items.length) {
+        alert("В этом словаре пока нет слов 🤷🏻‍♂️");
+        return;
+    }
+
+    const items = lesson.items;
+    let idx = loadCardIndex(currentLessonKey);
+    if (idx < 0 || idx >= items.length) idx = 0;
+
+    cardsState = {
+        key: currentLessonKey,
+        idx,
+        flipped: false,
+        favs: loadFavs(currentLessonKey)
+    };
+
+    $("cardsLessonName").textContent = lesson.name;
+    renderCard();
+    switchTab("cards");
+}
+
+// отрисовка карточки
+function renderCard() {
+    if (!cardsState) return;
+
+    const lesson = LESSONS[cardsState.key];
+    const items = lesson.items;
+    const item = items[cardsState.idx];
+
+    $("front").textContent = item.ru;
+    $("back").textContent = item.en;
+
+    const cardEl = $("card");
+    cardEl.classList.toggle("flipped", cardsState.flipped);
+
+    $("favBtn").classList.toggle("fav", cardsState.favs.includes(cardsState.idx));
+
+    saveCardIndex(cardsState.key, cardsState.idx);
+}
+
+// действия
+function flipCard() {
+    if (!cardsState) return;
+    cardsState.flipped = !cardsState.flipped;
+    renderCard();
+}
+
+function nextCard() {
+    if (!cardsState) return;
+    const lesson = LESSONS[cardsState.key];
+    const len = lesson.items.length;
+    cardsState.idx = (cardsState.idx + 1) % len;
+    cardsState.flipped = false;
+    renderCard();
+}
+
+function prevCard() {
+    if (!cardsState) return;
+    const lesson = LESSONS[cardsState.key];
+    const len = lesson.items.length;
+    cardsState.idx = (cardsState.idx - 1 + len) % len;
+    cardsState.flipped = false;
+    renderCard();
+}
+
+function toggleFav() {
+    if (!cardsState) return;
+    const i = cardsState.favs.indexOf(cardsState.idx);
+    if (i === -1) cardsState.favs.push(cardsState.idx);
+    else cardsState.favs.splice(i, 1);
+    saveFavs(cardsState.key, cardsState.favs);
+    renderCard();
+}
+
+// навешиваем события на элементы карточек
+if ($("card")) {
+    $("card").addEventListener("click", flipCard);
+    $("card").addEventListener("keydown", (e) => {
+        if (!cardsState) return;
+        if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            flipCard();
+        }
+    });
+}
+if ($("prevBtn")) $("prevBtn").addEventListener("click", prevCard);
+if ($("nextBtn")) $("nextBtn").addEventListener("click", nextCard);
+if ($("favBtn")) $("favBtn").addEventListener("click", toggleFav);
+
+
+// ============================
+//   BNB HANDLERS (TABS)
+// ============================
+
+document.querySelectorAll('.bnb-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.classList.contains("disabled")) return;
+
+        const tab = btn.dataset.tab;
+
+        if (tab === "cards") {
+            startCards();
+        } else {
+            switchTab(tab);
+        }
+    });
+});
+
+
+// ============================
+//   APP INIT
+// ============================
+initHome();
+switchTab("home");

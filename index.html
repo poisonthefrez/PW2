@@ -94,7 +94,24 @@
     </section>
 
     <!-- СТРАНИЦЫ КАРТОЧЕК / ТЕСТ / СЛОВАРЬ – Заглушки -->
-    <section id="cards" class="screen hidden"></section>
+    <section id="cards" class="screen hidden cards-page" tabindex="-1">
+
+        <h2 id="cardsLessonName"></h2>
+
+        <div class="card" id="card" tabindex="0">
+            <div class="card-inner" id="cardInner">
+                <div class="card-face" id="front"></div>
+                <div class="card-face card-back" id="back"></div>
+            </div>
+        </div>
+
+        <div class="card-controls">
+            <button class="prevbt" id="prevBtn">←</button>
+            <button class="favbt" id="favBtn">♡</button>
+            <button class="nextbt" id="nextBtn">→</button>
+        </div>
+    </section>
+
     <section id="test" class="screen hidden"></section>
     <section id="dict" class="screen hidden"></section>
 
