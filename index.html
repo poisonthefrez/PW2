@@ -93,11 +93,18 @@
         </section>
     </section>
 
-    <!-- СТРАНИЦЫ КАРТОЧЕК / ТЕСТ / СЛОВАРЬ – Заглушки -->
+    <!-- СТРАНИЦА КАРТОЧЕК -->
     <section id="cards" class="screen hidden cards-page" tabindex="-1">
 
+        <!-- Название урока -->
         <h2 id="cardsLessonName"></h2>
 
+        <!-- Прогресс -->
+        <div class="cards-progress">
+            <div class="cards-progress-fill" id="cardsProgressFill"></div>
+        </div>
+
+        <!-- Карточка -->
         <div class="card" id="card" tabindex="0">
             <div class="card-inner" id="cardInner">
                 <div class="card-face" id="front"></div>
@@ -105,12 +112,15 @@
             </div>
         </div>
 
+        <!-- Контролы -->
         <div class="card-controls">
             <button class="prevbt" id="prevBtn">←</button>
             <button class="favbt" id="favBtn">♡</button>
             <button class="nextbt" id="nextBtn">→</button>
         </div>
+
     </section>
+
 
     <section id="test" class="screen hidden"></section>
     <section id="dict" class="screen hidden"></section>

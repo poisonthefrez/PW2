@@ -597,25 +597,56 @@ body.lock {
     font-size:.82rem;
     opacity:.85;
 }
+
+/* ======== CARDS PAGE ======== */
 .cards-page{
-    padding-top:2.4rem;
     display:flex;
     flex-direction:column;
     align-items:center;
+    justify-content:flex-start;
+
+    height:100vh;
+    padding-top:3.2rem;
     gap:1.3rem;
 }
 
+/* ======== TITLE ======== */
 #cardsLessonName{
     font-family:Comfortaa,sans-serif;
     font-size:2rem;
     color:#ffeef7;
     text-shadow:0 10px 30px rgba(0,0,0,.7);
+    text-align:center;
 }
 
+/* ======== PROGRESS ======== */
+.cards-progress{
+    width:80%;
+    height:6px;
+    border-radius:4px;
+    overflow:hidden;
+    background:rgba(255,140,200,.25);
+    margin-top:.2rem;
+}
+
+.cards-progress-fill{
+    height:100%;
+    width:0%;
+    border-radius:inherit;
+    background:linear-gradient(90deg,#ff74c9,#e94fcd,#b639dd);
+    transition:width .28s ease;
+}
+
+/* ======== CARD ======== */
 .card{
-    width:340px;
-    height:200px;
-    perspective:800px;
+    width:360px;
+    height:220px;
+    margin-top:1.8rem;
+    perspective:900px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
     cursor:pointer;
 }
 
@@ -623,7 +654,7 @@ body.lock {
     width:100%;
     height:100%;
     position:relative;
-    transition:transform 0.45s ease;
+    transition:transform .45s ease;
     transform-style:preserve-3d;
 }
 
@@ -638,29 +669,37 @@ body.lock {
     display:flex;
     align-items:center;
     justify-content:center;
+    text-align: center;
 
     font-size:1.9rem;
     font-weight:600;
-    text-shadow:0 12px 30px rgba(0,0,0,.8);
+    text-shadow:0 12px 30px rgba(0,0,0,.85);
 
-    backdrop-filter:blur(10px);
+    padding:1.2rem;
     border-radius:18px;
-    padding:1rem;
-
-    background:radial-gradient(circle at top left,rgba(255,255,255,.14),transparent 60%),rgba(40,8,18,.95);
-    border:1px solid rgba(255,190,210,.55);
-
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,190,210,.5);
     backface-visibility:hidden;
+
+    background:radial-gradient(circle at top left,
+        rgba(255,255,255,.14),
+        transparent 60%),
+        rgba(40,8,18,.95);
 }
 
 .card-back{
     transform:rotateY(180deg);
-    background:radial-gradient(circle at top left,rgba(255,180,190,.18),transparent 60%),rgba(110,10,30,.95);
+    background:radial-gradient(circle at top left,
+        rgba(255,180,190,.22),
+        transparent 60%),
+        rgba(110,10,30,.95);
 }
 
+/* ======== CONTROLS ======== */
 .card-controls{
     display:flex;
-    gap:.8rem;
+    gap:1rem;
+    margin-top:1.4rem;
 }
 
 .prevbt,
@@ -668,15 +707,33 @@ body.lock {
 .favbt{
     font-size:1.4rem;
     font-weight:600;
-    padding:.6rem 1rem;
+    padding:.7rem 1.2rem;
     border-radius:10px;
     cursor:pointer;
-    border:1px solid rgba(255,140,200,.4);
+
     background:rgba(30,2,12,.7);
+    border:1px solid rgba(255,140,200,.35);
     color:#fff;
+    backdrop-filter:blur(12px);
+
+    transition:.22s ease;
+    box-shadow:0 6px 16px rgba(0,0,0,.55);
+}
+
+.prevbt:hover,
+.nextbt:hover,
+.favbt:hover{
+    transform:translateY(-1px);
+    border-color:rgba(255,160,220,.4);
+}
+
+.prevbt:active,
+.nextbt:active,
+.favbt:active{
+    transform:scale(.96);
 }
 
 .favbt.fav{
-    color:#ff6e7f;
+    color:#ff6e8f;
+    border-color:rgba(255,120,150,.7);
 }
-

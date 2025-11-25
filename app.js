@@ -289,18 +289,39 @@ function renderCard() {
 
     const lesson = LESSONS[cardsState.key];
     const items = lesson.items;
+    const idx = cardsState.idx;
+
+    // safety
+    if (idx < 0 || idx >= items.length) {
+        cardsState.idx = 0;
+    }
+
     const item = items[cardsState.idx];
 
+    // данные карточки
     $("front").textContent = item.ru;
     $("back").textContent = item.en;
 
-    const cardEl = $("card");
-    cardEl.classList.toggle("flipped", cardsState.flipped);
-
+    $("card").classList.toggle("flipped", cardsState.flipped);
     $("favBtn").classList.toggle("fav", cardsState.favs.includes(cardsState.idx));
 
+    // сохраняем
     saveCardIndex(cardsState.key, cardsState.idx);
+
+    // 🔥 обновляем прогресс
+    updateCardsProgress();
 }
+function updateCardsProgress() {
+    const bar = $("cardsProgressFill");
+    if (!bar || !cardsState) return;
+
+    const lesson = LESSONS[cardsState.key];
+    const total = lesson.items.length - 1;
+    const idx = cardsState.idx;
+
+    bar.style.width = ((idx / total) * 100) + "%";
+}
+
 
 // действия
 function flipCard() {
@@ -350,6 +371,17 @@ if ($("card")) {
 if ($("prevBtn")) $("prevBtn").addEventListener("click", prevCard);
 if ($("nextBtn")) $("nextBtn").addEventListener("click", nextCard);
 if ($("favBtn")) $("favBtn").addEventListener("click", toggleFav);
+
+function loadSeenSet(key){
+    try{
+        return new Set(JSON.parse(localStorage.getItem(`pw_seen_${key}`)) || []);
+    }catch{
+        return new Set();
+    }
+}
+function saveSeenSet(key, set){
+    localStorage.setItem(`pw_seen_${key}`, JSON.stringify([...set]));
+}
 
 
 // ============================
