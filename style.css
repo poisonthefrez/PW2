@@ -737,3 +737,38 @@ body.lock {
     color:#ff6e8f;
     border-color:rgba(255,120,150,.7);
 }
+/* NEW WORDS / FAVORITES PANEL  */
+.new-lesson-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(255,255,255,.05);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+}
+
+.fav-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.fav-item {
+    background: rgba(255,255,255,.08);
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fav-ru {
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+.fav-en {
+    font-size: .85rem;
+    opacity: .75;
+}
