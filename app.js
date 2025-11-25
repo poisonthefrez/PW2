@@ -16,6 +16,10 @@ function $(id) {
     const HARD = 3500;
     const t0 = performance.now();
 
+    // блокируем скролл пока лоадер активен
+    document.documentElement.classList.add('lock');
+    document.body.classList.add('lock');
+
     function reveal() {
         loader.classList.add('hide');
         document.documentElement.classList.remove('lock');
@@ -54,9 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================
 //   APP STATE (CURRENT LESSON)
 // ============================
-
 const STORAGE_LESSON_KEY = 'pw_current_lesson_key';
-
 // LESSONS приходит из data.js (глобальный объект)
 let currentLessonKey = localStorage.getItem(STORAGE_LESSON_KEY) || null;
 
@@ -74,7 +76,6 @@ function getCurrentLesson() {
 // ============================
 //   BOTTOM NAV STATE
 // ============================
-
 function updateBNBState() {
     document.querySelectorAll(".bnb-item").forEach(btn => {
         const tab = btn.dataset.tab;
@@ -102,7 +103,6 @@ function switchTab(tab) {
 // ============================
 //   LESSON PICKER (HERO)
 // ============================
-
 const trigger = $("lessonTrigger");
 const dropdown = $("lessonDropdown");
 const lessonDescEl = $("lessonDesc");
@@ -156,11 +156,14 @@ if (dropdown) {
 // ============================
 //   HOME INIT + STATS + FAVS
 // ============================
+function updateHomeProgress() {
+    const count = getTotalSeenCount();
+    $("stat_words_learned").textContent = count;
+    $("stat_cards_seen").textContent = count;
+}
 
 function initHome() {
-    // статистика (заглушки)
-    $("stat_words_learned").textContent = 0;
-    $("stat_cards_seen").textContent = 0;
+    // тесты пока заглушка
     $("stat_tests_done").textContent = 0;
 
     // словари
@@ -175,12 +178,15 @@ function initHome() {
     // блок "Новые слова"
     renderLatestLesson();
 
-    // если при прошлой сессии уже был выбран словарь — подтягиваем его в UI
+    // подтягиваем выбранный словарь (если был)
     const savedLesson = getCurrentLesson();
     if (savedLesson) {
         triggerText.textContent = savedLesson.name;
         lessonDescEl.textContent = savedLesson.description;
     }
+
+    // прогресс по изученным словам (по всем словарям)
+    updateHomeProgress();
 
     // обновляем состояние навигации
     updateBNBState();
@@ -190,7 +196,6 @@ function initHome() {
 // ============================
 //   NEW WORDS PANEL
 // ============================
-
 function getLastLessonKey() {
     const keys = Object.keys(LESSONS);
     return keys[keys.length - 1];
@@ -211,8 +216,7 @@ function renderLatestLesson() {
     card.classList.remove("hidden");
 
     card.onclick = () => {
-        // если уже выбран этот же урок — ничего не делаем
-        if (currentLessonKey === key) return;
+        if (currentLessonKey === key) return; // уже выбран
 
         currentLessonKey = key;
         localStorage.setItem(STORAGE_LESSON_KEY, currentLessonKey);
@@ -226,10 +230,8 @@ function renderLatestLesson() {
 
 
 // ============================
-//   CARDS ENGINE
+//   LOCAL STORAGE HELPERS
 // ============================
-
-let cardsState = null;
 
 // index per lesson
 function loadCardIndex(key) {
@@ -254,6 +256,37 @@ function saveFavs(key, favs) {
     localStorage.setItem(`pw_fav_${key}`, JSON.stringify(favs));
 }
 
+// seen (изученные карточки)
+function loadSeenSet(key) {
+    try {
+        return new Set(JSON.parse(localStorage.getItem(`pw_seen_${key}`)) || []);
+    } catch {
+        return new Set();
+    }
+}
+function saveSeenSet(key, set) {
+    localStorage.setItem(`pw_seen_${key}`, JSON.stringify([...set]));
+}
+
+// общее количество изученных слов по всем словарям
+function getTotalSeenCount() {
+    return Object.keys(LESSONS).reduce((sum, key) => {
+        try {
+            const raw = localStorage.getItem(`pw_seen_${key}`);
+            const arr = JSON.parse(raw);
+            return sum + (Array.isArray(arr) ? arr.length : 0);
+        } catch {
+            return sum;
+        }
+    }, 0);
+}
+
+
+// ============================
+//   CARDS ENGINE
+// ============================
+let cardsState = null;
+
 // запуск карточек
 function startCards() {
     if (!currentLessonKey) {
@@ -267,15 +300,15 @@ function startCards() {
         return;
     }
 
-    const items = lesson.items;
     let idx = loadCardIndex(currentLessonKey);
-    if (idx < 0 || idx >= items.length) idx = 0;
+    if (idx < 0 || idx >= lesson.items.length) idx = 0;
 
     cardsState = {
         key: currentLessonKey,
         idx,
         flipped: false,
-        favs: loadFavs(currentLessonKey)
+        favs: loadFavs(currentLessonKey),
+        seen: loadSeenSet(currentLessonKey)
     };
 
     $("cardsLessonName").textContent = lesson.name;
@@ -291,26 +324,23 @@ function renderCard() {
     const items = lesson.items;
     const idx = cardsState.idx;
 
-    // safety
     if (idx < 0 || idx >= items.length) {
         cardsState.idx = 0;
     }
 
     const item = items[cardsState.idx];
 
-    // данные карточки
     $("front").textContent = item.ru;
     $("back").textContent = item.en;
 
     $("card").classList.toggle("flipped", cardsState.flipped);
     $("favBtn").classList.toggle("fav", cardsState.favs.includes(cardsState.idx));
 
-    // сохраняем
     saveCardIndex(cardsState.key, cardsState.idx);
-
-    // 🔥 обновляем прогресс
     updateCardsProgress();
 }
+
+// прогресс-бар внутри экрана Cards (позиционный, не по seen)
 function updateCardsProgress() {
     const bar = $("cardsProgressFill");
     if (!bar || !cardsState) return;
@@ -319,9 +349,24 @@ function updateCardsProgress() {
     const total = lesson.items.length - 1;
     const idx = cardsState.idx;
 
+    if (total <= 0) {
+        bar.style.width = "0%";
+        return;
+    }
+
     bar.style.width = ((idx / total) * 100) + "%";
 }
 
+// отметить карточку как изученную (первый раз увидели этот индекс)
+function markSeen() {
+    if (!cardsState) return;
+    const { key, idx, seen } = cardsState;
+    if (!seen.has(idx)) {
+        seen.add(idx);
+        saveSeenSet(key, seen);
+        updateHomeProgress();
+    }
+}
 
 // действия
 function flipCard() {
@@ -332,32 +377,44 @@ function flipCard() {
 
 function nextCard() {
     if (!cardsState) return;
-    const lesson = LESSONS[cardsState.key];
+    const s = cardsState;
+    const lesson = LESSONS[s.key];
     const len = lesson.items.length;
-    cardsState.idx = (cardsState.idx + 1) % len;
-    cardsState.flipped = false;
+
+    s.idx = (s.idx + 1) % len;
+    s.flipped = false;
     renderCard();
+    markSeen();
 }
 
 function prevCard() {
     if (!cardsState) return;
-    const lesson = LESSONS[cardsState.key];
+    const s = cardsState;
+    const lesson = LESSONS[s.key];
     const len = lesson.items.length;
-    cardsState.idx = (cardsState.idx - 1 + len) % len;
-    cardsState.flipped = false;
+
+    s.idx = (s.idx - 1 + len) % len;
+    s.flipped = false;
     renderCard();
+    markSeen();
 }
 
 function toggleFav() {
     if (!cardsState) return;
-    const i = cardsState.favs.indexOf(cardsState.idx);
-    if (i === -1) cardsState.favs.push(cardsState.idx);
-    else cardsState.favs.splice(i, 1);
-    saveFavs(cardsState.key, cardsState.favs);
+    const { idx, favs, key } = cardsState;
+    const i = favs.indexOf(idx);
+    if (i === -1) favs.push(idx);
+    else favs.splice(i, 1);
+    saveFavs(key, favs);
     renderCard();
 }
 
-// навешиваем события на элементы карточек
+
+// ============================
+//   EVENTS BINDING
+// ============================
+
+// карточка: клик / клавиатура
 if ($("card")) {
     $("card").addEventListener("click", flipCard);
     $("card").addEventListener("keydown", (e) => {
@@ -368,26 +425,12 @@ if ($("card")) {
         }
     });
 }
+// кнопки
 if ($("prevBtn")) $("prevBtn").addEventListener("click", prevCard);
 if ($("nextBtn")) $("nextBtn").addEventListener("click", nextCard);
 if ($("favBtn")) $("favBtn").addEventListener("click", toggleFav);
 
-function loadSeenSet(key){
-    try{
-        return new Set(JSON.parse(localStorage.getItem(`pw_seen_${key}`)) || []);
-    }catch{
-        return new Set();
-    }
-}
-function saveSeenSet(key, set){
-    localStorage.setItem(`pw_seen_${key}`, JSON.stringify([...set]));
-}
-
-
-// ============================
-//   BNB HANDLERS (TABS)
-// ============================
-
+// BNB (табы)
 document.querySelectorAll('.bnb-item').forEach(btn => {
     btn.addEventListener('click', () => {
         if (btn.classList.contains("disabled")) return;
@@ -408,3 +451,8 @@ document.querySelectorAll('.bnb-item').forEach(btn => {
 // ============================
 initHome();
 switchTab("home");
+
+// (опционально) SERVICE WORKER
+// if ("serviceWorker" in navigator) {
+//     navigator.serviceWorker.register("/PW2/sw.js").catch(()=>{});
+// }
