@@ -128,26 +128,29 @@
 
 
     <section id="test" class="screen">
-        <!-- START SCREEN -->
-
+        <!--TEST START SCREEN -->
         <div id="testStartScreen" class="test-screen hidden">
-            <h2 id="ts_lesson_name"></h2>
+            <h2 class="ts_lesson_name" id="ts_lesson_name"></h2>
             <p id="ts_question"></p>
             <button id="ts_start_btn" class="test-main-btn">Начать тестик 💞</button>
         </div>
 
         <!-- RUN SCREEN -->
         <div id="testRunScreen" class="test-screen hidden">
-            <h2 id="tt_lesson_name"></h2>
-            <p id="tt_question"></p>
 
-            <div id="tt_options"></div>
+            <div class="test-header">
+                <h2 id="tt_lesson_name"></h2>
+            </div>
+
+            <div class="test-body">
+                <p id="tt_question"></p>
+                <div id="tt_options"></div>
+            </div>
 
             <div id="tt_counter_wrap">
                 <span id="tt_counter"></span>
             </div>
         </div>
-
 
         <!-- SUMMARY -->
         <div id="testSummaryScreen" class="test-screen hidden">
