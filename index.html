@@ -153,21 +153,36 @@
         </div>
 
         <!-- SUMMARY -->
+        <!-- SUMMARY -->
         <div id="testSummaryScreen" class="test-screen hidden">
-            <h2 id="tres_title"></h2>
-            <p id="tres_summary"></p>
-            <button id="tres_retry" class="test-main-btn">Пройти ещё раз 🔄</button>
-            <button id="tres_show_details" class="test-main-btn">Посмотреть ответы 📚</button>
+
+            <div class="test-summary-header">
+                <h2 id="tres_title" class="tres_title"></h2>
+            </div>
+
+            <div class="test-summary-body">
+                <p id="tres_summary" class="tres_summary"></p>
+                <button id="tres_retry" class="test-main-btn">Пройти ещё раз 🔄</button>
+                <button id="tres_show_details" class="test-main-btn">Посмотреть ответы 📚</button>
+            </div>
+
         </div>
 
         <!-- FULL REPORT -->
         <div id="testResultScreen" class="test-screen hidden">
-            <div class="tres-header-fixed"></div>
+
+            <div class="tres-header-fixed">
+                <h2>Все ответы 📚</h2>
+            </div>
 
             <div id="tres_scroll">
                 <div id="tres_list"></div>
+
+                <button id="tres_retry_bottom" class="test-main-btn2">Пройти ещё раз 🔄</button>
             </div>
+
         </div>
+
     </section>
     <!--DICT-->
     <section id=" dict" class="screen hidden"></section>

@@ -723,6 +723,7 @@ function renderFullResults() {
 // события UI
 $("ts_start_btn")?.addEventListener("click", initTestEngine);
 $("tres_retry")?.addEventListener("click", initTestEngine);
+$("tres_retry_bottom")?.addEventListener("click", initTestEngine);
 $("tres_show_details")?.addEventListener("click", renderFullResults);
 
 

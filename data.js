@@ -142,4 +142,26 @@ const LESSONS = {
       { ru: "Хвастаться о", en: "Boast about" }
     ]
   },
+  testTest1: {
+    name: 'Тестовый 1',
+    description: 'Тест1, Тест2, Тест3..',
+    timestamp: 1732620000000,
+    items: [
+      { ru: "Тест1", en: "Test1" },
+      { ru: "Тест2", en: "Test2" },
+      { ru: "Тест3", en: "Test3" },
+      { ru: "Тест4", en: "Test4" },
+    ]
+  },
+  testTest2: {
+    name: 'Тестовый 2',
+    description: 'Тест4, Тест5, Тест6..',
+    timestamp: 1732625000000,
+    items: [
+      { ru: "Тест5", en: "Test5" },
+      { ru: "Тест6", en: "Test6" },
+      { ru: "Тест7", en: "Test7" },
+      { ru: "Тест8", en: "Test8" },
+    ]
+  },
 };
