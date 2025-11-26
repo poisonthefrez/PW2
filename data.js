@@ -1,7 +1,7 @@
 const LESSONS = {
   family: {
     name: 'Семья 👩🏼‍❤️‍👨🏻',
-    description: 'Elders, Dull moment, Niece etc.',
+    description: 'Культурные традиции, Семейная честь, Поддержка..',
     items: [
       { ru: "Культурные Традиции", en: "Cultural traditions" },
       { ru: "Единственный ребенок", en: "An only child" },
@@ -38,7 +38,7 @@ const LESSONS = {
   },
   family2: {
     name: 'Семья 2 👩🏼‍❤️‍👨🏻',
-    description: 'Family idioms and expressions',
+    description: 'Быть главой семьи, Наткнуться, Зайти к..',
     items: [
       { ru: "Быть главой семьи", en: "Wear trousers in the family"},
       { ru: "Наткнуться", en: "Come across"},
@@ -69,7 +69,7 @@ const LESSONS = {
   },
     stress1: {
       name: 'Стресс 😬',
-      description: 'Stress, emotions and behaviour',
+      description: 'Возрастать, В кратце, Напряженный..',
       items: [
         { ru: "Возрастать", en: "Mount" },
         { ru: "На кануне экзаменов", en: "Run up to exams" },
@@ -103,8 +103,8 @@ const LESSONS = {
       ]
     },
       bodyLanguageAndBehaviour: {
-      name: 'Жесты и Поведение 🤌🏻',
-      description: 'Physical reactions, gestures, emotions and social behaviour.',
+      name: 'Поведение 🤌🏻',
+      description: 'Покачать головой, Сжать кулаки, Пожать плечами..',
       items: [
         { ru: "Покачать головой", en: "Shake the head" },
         { ru: "Сжать кулаки", en: "Clench the fists" },
@@ -137,5 +137,5 @@ const LESSONS = {
         { ru: "Настаивать на", en: "Insist on" },
         { ru: "Хвастаться о", en: "Boast about" }
       ]
-    }
+    },
 };

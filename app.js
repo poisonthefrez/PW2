@@ -44,11 +44,37 @@ document.addEventListener("DOMContentLoaded", () => {
         "Как настроение у моей девочки? ❤️ Всё получится!",
         "Сделаем этот английский на раз-два ✨",
         "Ты моё маленькое счастье 💗",
-        "Что сегодня учим, солнышко? 🌸",
-        "У тебя всё получится, моя девочка 💕"
+        "У тебя всё получится, моя девочка 💕",
+        "Ты самая умная девочка, я верю в тебя 🌙",
+        "Каждое слово — шаг вперёд, горжусь тобой 💘",
+        "Учимся не спеша, ты справишься лучше всех 💫",
+        "Твои успехи — моя радость, моя маленькая звёздочка ✨",
+        "Милая, ты самая чудесная девушка на свете! 🌹",
+        "Давай постараемся, моя малышка, все получится! ✨",
+        "Выучим этот инглиш слово за словом, хихи 😝",
+        "С любовью, твой Владушка! ❤️"
     ];
     const el = document.querySelector(".hero-sub");
     if (el) el.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+});
+// ============================
+//   HERO RANDOM WORD (v2)
+// ============================
+document.addEventListener("DOMContentLoaded", () => {
+    const words2 = [
+        "моя любимая",
+        "моё солнышко",
+        "моя дорогая",
+        "мой цветочек",
+        "моя киса",
+        "моя девочка",
+        "моя кошечка"
+    ];
+    const el2 = document.getElementById("heroRandomWord");
+    if (el2) {
+        const w = words2[Math.floor(Math.random() * words2.length)];
+        el2.textContent = `${w} ?`;
+    }
 });
 
 
@@ -136,38 +162,64 @@ dropdown?.addEventListener("click", e => {
 
 
 // ============================
-//   HOME (stats + favorites)
+//   NEW WORDS PANEL (V3)
+// ============================
+function getLastLessonKey() {
+    const keys = Object.keys(LESSONS);
+    return keys[keys.length - 1];
+}
+
+function renderLatestLesson() {
+    const card = $("latestLessonCard");
+    if (!card) return;
+
+    const key = getLastLessonKey();
+    const lesson = LESSONS[key];
+    if (!lesson) return;
+
+    card.innerHTML = `
+        <div class="new-lesson-card-title">${lesson.name}</div>
+        <div class="new-lesson-card-desc">${lesson.description}</div>
+    `;
+    card.classList.remove("hidden");
+
+    card.onclick = () => {
+        if (currentLessonKey === key) return;
+
+        currentLessonKey = key;
+        localStorage.setItem(STORAGE_LESSON_KEY, key);
+
+        triggerText.textContent = lesson.name;
+        lessonDescEl.textContent = lesson.description;
+
+        updateBNBState();
+    };
+}
+
+
+// ============================
+//   PROGRESS (WORDS / CARDS)
 // ============================
 function getTotalSeenCount() {
     return Object.keys(LESSONS).reduce((sum, k) => {
-        const raw = localStorage.getItem(`pw_seen_${k}`);
-        const arr = JSON.parse(raw);
-        return sum + (Array.isArray(arr) ? arr.length : 0);
+        try {
+            const raw = localStorage.getItem(`pw_seen_${k}`);
+            const arr = JSON.parse(raw);
+            return sum + (Array.isArray(arr) ? arr.length : 0);
+        } catch {
+            return sum;
+        }
     }, 0);
 }
 
 function updateHomeProgress() {
     const count = getTotalSeenCount();
-    $("stat_words_learned").textContent = count;
-    $("stat_cards_seen").textContent = count;
+    const elWords = $("stat_words_learned");
+    const elCards = $("stat_cards_seen");
+    if (elWords) elWords.textContent = count;
+    if (elCards) elCards.textContent = count;
 }
 
-function initHome() {
-    $("stat_tests_done").textContent = 0;
-    $("stat_dicts_total").textContent = Object.keys(LESSONS).length;
-
-    renderLessonList();
-    renderFavoriteWordsPanel();
-
-    const saved = getCurrentLesson();
-    if (saved) {
-        triggerText.textContent = saved.name;
-        lessonDescEl.textContent = saved.description;
-    }
-
-    updateHomeProgress();
-    updateBNBState();
-}
 
 
 // ============================
@@ -175,11 +227,20 @@ function initHome() {
 // ============================
 function loadFavs(key) {
     try {
-        return JSON.parse(localStorage.getItem(`pw_fav_${key}`)) || [];
+        const raw = localStorage.getItem(`pw_fav_${key}`);
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        if (!Array.isArray(arr)) return [];
+        return Array.from(
+            new Set(
+                arr.map(v => Number(v)).filter(n => Number.isFinite(n) && n >= 0)
+            )
+        );
     } catch {
         return [];
     }
 }
+
 function saveFavs(key, favs) {
     localStorage.setItem(`pw_fav_${key}`, JSON.stringify(favs));
 }
@@ -188,10 +249,10 @@ function getAllFavoriteWords() {
     const arr = [];
 
     for (const key of Object.keys(LESSONS)) {
-        const lesson = LESSONS[key];
         const favIdx = loadFavs(key);
         if (!favIdx?.length) continue;
 
+        const lesson = LESSONS[key];
         favIdx.forEach(i => {
             const item = lesson.items[i];
             if (!item) return;
@@ -213,15 +274,25 @@ function renderFavoriteWordsPanel() {
         return;
     }
 
-    box.innerHTML = favs
-        .slice(0, 10)
-        .map(i => `
-            <li class="fav-item">
-                <span class="ru">${i.ru}</span>
-                <span class="en">${i.en}</span>
-            </li>
-        `).join("");
+    box.innerHTML = favs.map(i => `
+        <li class="fav-item">
+            <div class="fav-text">
+                <span class="fav-ru">${i.ru}</span>
+                <span class="fav-en">${i.en}</span>
+            </div>
+            <button class="fav-del" data-en="${i.en}">✕</button>
+        </li>
+    `).join("");
+
+
+    // обработчик удаления
+    box.querySelectorAll(".fav-del").forEach(btn => {
+        btn.addEventListener("click", () => {
+            removeFav(btn.dataset.en);
+        });
+    });
 }
+
 
 
 // ============================
@@ -264,13 +335,14 @@ function startCards() {
         key: currentLessonKey,
         idx,
         flipped: false,
-        favs: loadFavs(currentLessonKey),
+        favs: [...loadFavs(currentLessonKey)], // копия
         seen: loadSeenSet(currentLessonKey)
     };
 
     $("cardsLessonName").textContent = lesson.name;
     renderCard();
     switchTab("cards");
+    markSeen(); // считаем первую карточку просмотренной
 }
 
 function renderCard() {
@@ -281,8 +353,11 @@ function renderCard() {
 
     $("front").textContent = item.ru;
     $("back").textContent = item.en;
+
     $("card").classList.toggle("flipped", cardsState.flipped);
-    $("favBtn").classList.toggle("fav", cardsState.favs.includes(cardsState.idx));
+
+    const isFav = Array.isArray(cardsState.favs) && cardsState.favs.includes(cardsState.idx);
+    $("favBtn").classList.toggle("fav", isFav);
 
     saveCardIndex(cardsState.key, cardsState.idx);
     updateCardsProgress();
@@ -290,12 +365,13 @@ function renderCard() {
 
 function updateCardsProgress() {
     const bar = $("cardsProgressFill");
-    if (!bar) return;
+    if (!bar || !cardsState) return;
     const len = LESSONS[cardsState.key].items.length - 1;
-    bar.style.width = len <= 0 ? "0%" : `${cardsState.idx / len * 100}%`;
+    bar.style.width = len <= 0 ? "0%" : `${(cardsState.idx / len) * 100}%`;
 }
 
 function markSeen() {
+    if (!cardsState) return;
     const { key, idx, seen } = cardsState;
     if (!seen.has(idx)) {
         seen.add(idx);
@@ -305,11 +381,13 @@ function markSeen() {
 }
 
 function flipCard() {
+    if (!cardsState) return;
     cardsState.flipped = !cardsState.flipped;
     renderCard();
 }
 
 function nextCard() {
+    if (!cardsState) return;
     const s = cardsState;
     const len = LESSONS[s.key].items.length;
     s.idx = (s.idx + 1) % len;
@@ -319,6 +397,7 @@ function nextCard() {
 }
 
 function prevCard() {
+    if (!cardsState) return;
     const s = cardsState;
     const len = LESSONS[s.key].items.length;
     s.idx = (s.idx - 1 + len) % len;
@@ -328,15 +407,115 @@ function prevCard() {
 }
 
 function toggleFav() {
-    const { idx, favs, key } = cardsState;
+    if (!cardsState) return;
+
+    const key = cardsState.key;
+    const idx = Number(cardsState.idx);
+
+    const favs = [...loadFavs(key)];
     const i = favs.indexOf(idx);
 
     if (i === -1) favs.push(idx);
     else favs.splice(i, 1);
 
-    saveFavs(key, favs);      // persist
-    renderCard();             // UI state
+    saveFavs(key, favs);
+    cardsState.favs = favs;
+
+    renderCard();
     renderFavoriteWordsPanel();
+}
+function removeFav(enWord) {
+    // проходим по всем словарям
+    for (const key of Object.keys(LESSONS)) {
+        const favs = loadFavs(key);
+        if (!favs.length) continue;
+
+        const lesson = LESSONS[key];
+        const idxToRemove = favs.findIndex(i => {
+            const item = lesson.items[i];
+            return item && item.en === enWord;
+        });
+
+        if (idxToRemove !== -1) {
+            favs.splice(idxToRemove, 1);
+            saveFavs(key, favs);
+        }
+    }
+
+    // обновляем UI
+    renderFavoriteWordsPanel();
+}
+function renderDictProgressCircles() {
+    const box = $("statsCircleGrid");
+    if (!box) return;
+
+    box.innerHTML = "";
+
+    Object.entries(LESSONS).forEach(([key, lesson]) => {
+        const seen = loadSeenSet(key);
+        const total = lesson.items.length;
+        const pct = Math.round((seen.size / total) * 100);
+
+        const div = document.createElement("div");
+        div.className = "stats-circle";
+        div.innerHTML = `
+            <svg class="circle-svg" viewBox="0 0 100 100">
+                <circle class="bg" cx="50" cy="50" r="45"/>
+                <circle class="fg" cx="50" cy="50" r="45"
+                    style="stroke-dashoffset:${282 - (282 * pct / 100)}"/>
+            </svg>
+            <div class="circle-label">
+                <span class="circle-name">${lesson.name}</span>
+                <span class="circle-pct">${pct}%</span>
+            </div>
+        `;
+        div.onclick = () => {
+            currentLessonKey = key;
+            localStorage.setItem(STORAGE_LESSON_KEY, key);
+            triggerText.textContent = lesson.name;
+            lessonDescEl.textContent = lesson.description;
+            updateBNBState();
+        };
+
+        box.appendChild(div);
+    });
+}
+function getLessonProgress(key) {
+    const lesson = LESSONS[key];
+    if (!lesson) return 0;
+
+    const seenRaw = localStorage.getItem(`pw_seen_${key}`);
+    const seen = seenRaw ? JSON.parse(seenRaw) : [];
+
+    const total = lesson.items.length;
+    return total > 0 ? seen.length / total : 0;
+}
+$("statsRefreshBtn")?.addEventListener("click", () => {
+    renderDictProgressCircles();
+    updateHomeProgress();
+});
+
+
+
+// ============================
+//   HOME INIT
+// ============================
+function initHome() {
+    $("stat_tests_done").textContent = 0;
+
+    renderLessonList();
+    renderLatestLesson();
+    renderDictProgressCircles();
+    renderFavoriteWordsPanel();
+
+    const saved = getCurrentLesson();
+    if (saved) {
+        triggerText.textContent = saved.name;
+        lessonDescEl.textContent = saved.description;
+    }
+
+    updateHomeProgress();
+    updateBNBState();
 }
 
 

@@ -42,13 +42,14 @@
 
         <div class="hero">
             <h1 class="hero-title">
-                Что учим <span>сегодня?</span>
+                Что сегодня учим
+                <span id="heroRandomWord"></span>
             </h1>
 
             <p class="hero-sub"></p>
 
             <button class="lesson-trigger" id="lessonTrigger">
-                <span id="lessonTriggerText">Выберите словарь 📚</span>
+                <span id="lessonTriggerText">Какие словечки учим?</span>
             </button>
 
             <div class="lesson-dropdown hidden" id="lessonDropdown"></div>
@@ -56,7 +57,7 @@
         </div>
 
         <section class="stats-hud">
-            <h2 class="section-title">📈 Прогресс</h2>
+            <h2 class="section-title">Твои достижения:</h2>
             <div class="hud-grid">
                 <div class="hud-item">
                     <span class="hud-value" id="stat_words_learned">0</span>
@@ -73,19 +74,18 @@
             </div>
         </section>
 
-        <section class="dict-panel">
-            <h2 class="section-title">📚 Словари</h2>
-            <p class="panel-sub">
-                Активных словарей:
-                <span id="stat_dicts_total" class="panel-value">0</span>
-            </p>
-        </section>
+
         <!-- NEW WORDS PANEL -->
         <section class="new-lesson-panel">
-            <h2 class="section-title">🆕 Новые слова</h2>
+            <h2 class="section-title">Новые словечки: </h2>
             <div id="latestLessonCard" class="new-lesson-card hidden"></div>
         </section>
-
+        <!--STATS-->
+        <section class="stats-section">
+            <h2 class="section-title">Твоя статистика 💫</h2>
+            <div id="statsCircleGrid" class="stats-grid"></div>
+            <button id="statsRefreshBtn" class="stats-refresh-btn">Обновить</button>
+        </section>
 
         <section class="fav-tokens">
             <h2 class="section-title">❤️ Любимые слова</h2>
