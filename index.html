@@ -55,7 +55,7 @@
             <div class="lesson-dropdown hidden" id="lessonDropdown"></div>
             <p class="hero-sub2" id="lessonDesc"></p>
         </div>
-
+        <!--STATS-->
         <section class="stats-hud">
             <h2 class="section-title">Твои достижения:</h2>
             <div class="hud-grid">
@@ -74,7 +74,6 @@
             </div>
         </section>
 
-
         <!-- NEW WORDS PANEL -->
         <section class="new-lesson-panel">
             <h2 class="section-title">Новые словечки: </h2>
@@ -84,9 +83,15 @@
         <section class="stats-section">
             <h2 class="section-title">Твоя статистика 💫</h2>
             <div id="statsCircleGrid" class="stats-grid"></div>
-            <button id="statsRefreshBtn" class="stats-refresh-btn">Обновить</button>
+            <div id="statsCircleGridAll" class="stats-grid hidden"></div>
+            <div class="stats-actions">
+                <button id="statsRefreshBtn" class="stats-refresh-btn">Обновить</button>
+                <button id="statsToggleBtn" class="stats-toggle-btn">
+                    <span id="statsToggleArrow">▼</span>
+                </button>
+            </div>
         </section>
-
+        <!--Fav tokens-->
         <section class="fav-tokens">
             <h2 class="section-title">❤️ Любимые слова</h2>
             <ul id="home_favorite_words" class="token-list"></ul>
@@ -122,8 +127,47 @@
     </section>
 
 
-    <section id="test" class="screen hidden"></section>
-    <section id="dict" class="screen hidden"></section>
+    <section id="test" class="screen">
+        <!-- START SCREEN -->
+
+        <div id="testStartScreen" class="test-screen hidden">
+            <h2 id="ts_lesson_name"></h2>
+            <p id="ts_question"></p>
+            <button id="ts_start_btn" class="test-main-btn">Начать тестик 💞</button>
+        </div>
+
+        <!-- RUN SCREEN -->
+        <div id="testRunScreen" class="test-screen hidden">
+            <h2 id="tt_lesson_name"></h2>
+            <p id="tt_question"></p>
+
+            <div id="tt_options"></div>
+
+            <div id="tt_counter_wrap">
+                <span id="tt_counter"></span>
+            </div>
+        </div>
+
+
+        <!-- SUMMARY -->
+        <div id="testSummaryScreen" class="test-screen hidden">
+            <h2 id="tres_title"></h2>
+            <p id="tres_summary"></p>
+            <button id="tres_retry" class="test-main-btn">Пройти ещё раз 🔄</button>
+            <button id="tres_show_details" class="test-main-btn">Посмотреть ответы 📚</button>
+        </div>
+
+        <!-- FULL REPORT -->
+        <div id="testResultScreen" class="test-screen hidden">
+            <div class="tres-header-fixed"></div>
+
+            <div id="tres_scroll">
+                <div id="tres_list"></div>
+            </div>
+        </div>
+    </section>
+    <!--DICT-->
+    <section id=" dict" class="screen hidden"></section>
 
     <!-- BOTTOM NAV -->
     <nav class="pw-bnb">

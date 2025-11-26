@@ -4,6 +4,16 @@
 function $(id) {
     return document.getElementById(id);
 }
+// ============================
+//  UTILS
+// ============================
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 
 
 // ============================
@@ -495,6 +505,235 @@ $("statsRefreshBtn")?.addEventListener("click", () => {
     updateHomeProgress();
 });
 
+function renderStatsCircles() {
+    const recentBox = $("statsCircleGrid");
+    const allBox = $("statsCircleGridAll");
+    if (!recentBox || !allBox) return;
+
+    recentBox.innerHTML = "";
+    allBox.innerHTML = "";
+
+    // 1. Собираем словари в массив
+    const dicts = Object.entries(LESSONS).map(([key, lesson]) => ({
+        key,
+        ...lesson
+    }));
+
+    // 2. Сортировка — последний добавленный сверху
+    dicts.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    // 3. 4 свежих
+    const recent = dicts.slice(0,4);
+    const others = dicts.slice(4);
+
+    // 4. Рендер блоков
+    recent.forEach(d => recentBox.appendChild(createStatsCircle(d)));
+    others.forEach(d => allBox.appendChild(createStatsCircle(d)));
+}
+
+function createStatsCircle(dict) {
+    const seenRaw = localStorage.getItem(`pw_seen_${dict.key}`);
+    const seen = seenRaw ? JSON.parse(seenRaw) : [];
+    const total = dict.items.length;
+    const pct = total === 0 ? 0 : Math.round((seen.length / total) * 100);
+
+    const div = document.createElement("div");
+    div.className = "stats-circle";
+    div.innerHTML = `
+        <svg class="circle-svg" viewBox="0 0 100 100">
+            <circle class="bg" cx="50" cy="50" r="45"/>
+            <circle class="fg"
+                cx="50" cy="50" r="45"
+                style="stroke-dashoffset:${282-(282*pct/100)}"/>
+        </svg>
+        <div class="circle-label">
+            <span class="circle-name">${dict.name}</span>
+            <span class="circle-pct">${pct}%</span>
+        </div>
+    `;
+    div.onclick = () => openLesson(dict.key);
+    return div;
+}
+
+function openLesson(key){
+    currentLessonKey = key;
+    localStorage.setItem(STORAGE_LESSON_KEY, key);
+
+    triggerText.textContent = LESSONS[key].name;
+    lessonDescEl.textContent = LESSONS[key].description;
+    updateBNBState();
+}
+$("statsRefreshBtn")?.addEventListener("click", () => {
+    renderStatsCircles();
+});
+
+$("statsToggleBtn")?.addEventListener("click", () => {
+    const box = $("statsCircleGridAll");
+    const arrow = $("statsToggleArrow");
+
+    box.classList.toggle("hidden");
+
+    arrow.textContent = box.classList.contains("hidden") ? "▼" : "▲";
+});
+
+// ============================
+//   TEST ENGINE v3 (добавочный)
+// ============================
+
+let testState = null;
+
+/** Быстрый helper для показа секции теста */
+function showTestMode(screenId) {
+    // блокируем все .test-screen
+    document.querySelectorAll(".test-screen").forEach(s => s.classList.add("hidden"));
+    $(screenId)?.classList.remove("hidden");
+
+    // переключаем таб VISUAL
+    switchTab("test");
+}
+
+/** запуск теста с BNB */
+function startTestFlow() {
+    if (!currentLessonKey) {
+        alert("Сначала выбери словарь 📚");
+        return;
+    }
+
+    const lesson = LESSONS[currentLessonKey];
+
+    $("ts_lesson_name").textContent = lesson.name;
+    $("ts_question").textContent = "Приступаем к тесту?";
+    $("ts_start_btn").textContent = "Начать тестик 💞";
+
+    showTestMode("testStartScreen");
+}
+
+/** формирование новой попытки */
+function initTestEngine() {
+    const lesson = LESSONS[currentLessonKey];
+
+    testState = {
+        key: currentLessonKey,
+        order: shuffle(lesson.items.map((_, i) => i)),
+        cur: 0,
+        results: []
+    };
+
+    $("tt_lesson_name").textContent = lesson.name;
+    renderTestQuestionUI();
+    showTestMode("testRunScreen");
+}
+
+/** 1 вопрос */
+function renderTestQuestionUI() {
+    const st = testState;
+    const lesson = LESSONS[st.key];
+
+    if (st.cur >= st.order.length) {
+        finishTestEngine();
+        return;
+    }
+
+    const idx = st.order[st.cur];
+    const item = lesson.items[idx];
+
+    // вопрос
+    $("tt_question").innerHTML = `Как переводится <u>${item.ru}</u>?`;
+
+    // варианты
+    let variants = [item.en];
+    let pool = lesson.items
+        .map(x => x.en)
+        .filter(v => v !== item.en);
+
+    pool = shuffle(pool).slice(0, 3);
+    variants = shuffle([...variants, ...pool]);
+
+    // рендер кнопок
+    const box = $("tt_options");
+    box.innerHTML = "";
+    variants.forEach(v => {
+        const b = document.createElement("button");
+        b.className = "test-variant-btn";
+        b.textContent = v;
+        b.onclick = () => handleTestAnswer(v, item.en, idx);
+        box.appendChild(b);
+    });
+    $("tt_counter").textContent = `${st.cur + 1} / ${st.order.length}`;
+
+}
+
+/** обработка ответа */
+function handleTestAnswer(chosen, correct, idx) {
+    const box = $("tt_options");
+    const buttons = [...box.children];
+    const ok = chosen === correct;
+
+    // красим UI
+    buttons.forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correct) b.classList.add("correct");
+        if (b.textContent === chosen && !ok) b.classList.add("wrong");
+    });
+
+    testState.results.push({ idx, chosen, correct });
+
+    setTimeout(() => {
+        testState.cur++;
+        renderTestQuestionUI();
+    }, 1600);
+}
+
+/** финал теста */
+function finishTestEngine() {
+    const st = testState;
+    const lesson = LESSONS[st.key];
+    const total = st.results.length;
+    const good = st.results.filter(r => r.chosen === r.correct).length;
+
+    $("tres_title").textContent = lesson.name;
+    $("tres_summary").innerHTML = `
+        Ты прошла тест!<br/>
+        Верных ответов: <b>${good}</b> из <b>${total}</b>
+    `;
+
+    showTestMode("testSummaryScreen");
+}
+
+/** показать весь отчёт */
+function renderFullResults() {
+    const st = testState;
+    const box = $("tres_list");
+    const lesson = LESSONS[st.key];
+    box.innerHTML = "";
+
+    st.results.forEach(r => {
+        const item = lesson.items[r.idx];
+        box.innerHTML += `
+        <div class="result-item ${r.chosen === r.correct ? "correct" : "wrong"}">
+            <div class="question">${item.ru}</div>
+            <div>Ты ответила: <b>${r.chosen}</b></div>
+            <div>Правильно: <u>${item.en}</u></div>
+        </div>`;
+    });
+
+    showTestMode("testResultScreen");
+}
+
+// события UI
+$("ts_start_btn")?.addEventListener("click", initTestEngine);
+$("tres_retry")?.addEventListener("click", initTestEngine);
+$("tres_show_details")?.addEventListener("click", renderFullResults);
+
+
+/** Подключение к BNB (не ломаем общий слушатель!) */
+document.querySelectorAll(".bnb-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+        if (btn.dataset.tab === "test" && !btn.classList.contains("disabled")) {
+            startTestFlow();
+        }
+    });
+});
 
 
 // ============================
@@ -507,6 +746,8 @@ function initHome() {
     renderLatestLesson();
     renderDictProgressCircles();
     renderFavoriteWordsPanel();
+    renderStatsCircles();
+
 
     const saved = getCurrentLesson();
     if (saved) {
