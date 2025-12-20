@@ -28,6 +28,158 @@
   --border-glow: rgba(245,100,180,.35);
 }
 
+/* ========== FINAL REFINEMENT: Targeted centering for remaining iPad outliers ========== */
+@media (min-width: 768px) {
+  /* Home headline + subtitle group */
+  #home .hero {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #home .hero-title,
+  #home .hero-sub,
+  #home .hero-sub2 {
+    text-align: center;
+    max-width: 700px;
+    margin-left: 0; /* keep left-aligned text inside the centered container */
+    margin-right: 0;
+  }
+
+  /* Lesson trigger and dropdown should align with hero */
+  .lesson-trigger,
+  .lesson-dropdown {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  /* Test question + options */
+  .test-screen {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .test-body,
+  #ts_question,
+  #tt_question,
+  #tres_summary,
+  #tt_options {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Ensure single-column blocks match the same visual column */
+  .new-lesson-panel,
+  .stats-section,
+  .fav-tokens,
+  #tres_list,
+  #dict_list {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Home headline + subtitle group (landscape) */
+  #home .hero {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #home .hero-title,
+  #home .hero-sub,
+  #home .hero-sub2 {
+    max-width: 920px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Lesson trigger and dropdown */
+  .lesson-trigger,
+  .lesson-dropdown {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  /* Test question + options */
+  .test-screen {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .test-body,
+  #ts_question,
+  #tt_question,
+  #tres_summary,
+  #tt_options {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Single-column blocks align to the same column */
+  .new-lesson-panel,
+  .stats-section,
+  .fav-tokens,
+  #tres_list,
+  #dict_list {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* ========== Semantic feedback colors: always theme-agnostic ========== */
+/* Ensure test answer feedback uses fixed success/error colors regardless of theme */
+.test-screen .test-variant-btn.correct {
+  background: rgba(40, 167, 69, 0.25) !important; /* semantic green */
+  border-color: #218838 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(40,167,69,0.12), inset 0 0 8px rgba(255,255,255,0.04) !important;
+}
+.test-screen .test-variant-btn.wrong {
+  background: rgba(220, 53, 69, 0.25) !important; /* semantic red */
+  border-color: #c82333 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(220,53,69,0.12), inset 0 0 8px rgba(255,255,255,0.04) !important;
+}
+
+/* Also ensure disabled/active states keep contrast */
+.test-screen .test-variant-btn.correct:active,
+.test-screen .test-variant-btn.wrong:active {
+  transform: scale(.98);
+}
+
+/* Results list items semantics (also ensure they don't inherit theme accents) */
+.result-item.correct {
+  background: rgba(40,167,69,0.06) !important;
+  border-color: rgba(40,167,69,0.18) !important;
+}
+.result-item.wrong {
+  background: rgba(220,53,69,0.06) !important;
+  border-color: rgba(220,53,69,0.18) !important;
+}
 /* 🍷 Burgundy Theme */
 :root.theme-burgundy {
   --bg-gradient: radial-gradient(circle at top,#2a0a11 0%,#150307 55%,#090103 100%);
@@ -657,6 +809,227 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   transform:scale(.96);
 }
 
+/* ======================================= PERSISTENT LEARNING RESULT STYLES ====================================== */
+
+/* Summary Container with Progress Ring */
+.tres-summary-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.6rem;
+  background: linear-gradient(170deg, var(--primary-gloss), var(--surface-light));
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 22px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 0 20px var(--card-glow), 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+.tres-lesson-name {
+  font-family: Comfortaa, sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--section-title-color);
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.tres-progress-ring-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tres-progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.tres-progress-bg {
+  stroke: var(--primary-glow);
+  stroke-width: 6;
+  fill: none;
+}
+
+.tres-progress-fill {
+  stroke: var(--primary-color);
+  stroke-width: 6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 282;
+  stroke-dashoffset: 282;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.tres-progress-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.tres-percentage {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+
+.tres-progress-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  max-width: 100px;
+  line-height: 1.2;
+}
+
+/* Perfect Message (No Mistakes) */
+.tres-perfect-message {
+  width: 100%;
+  max-width: 400px;
+  padding: 1.8rem;
+  margin: 1rem auto;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-lighter);
+  background: radial-gradient(circle at top left, var(--primary-gloss), transparent 60%), var(--surface-color);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Mistake Cards */
+.tres-mistake-card {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-strong);
+  background: radial-gradient(circle at top left, rgba(255, 80, 100, 0.06), transparent 60%), var(--surface-color);
+  border-left: 3px solid rgba(255, 80, 100, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 12px rgba(255, 80, 100, 0.08);
+}
+
+.tres-mistake-card:hover {
+  border-left-color: rgba(255, 80, 100, 0.55);
+  box-shadow: 0 0 18px rgba(255, 80, 100, 0.15);
+}
+
+.tres-mistake-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tres-mistake-word {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-lighter);
+  flex: 1;
+}
+
+.tres-fav-btn {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  padding: 0.5rem 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+}
+
+.tres-fav-btn:active {
+  transform: scale(0.92);
+}
+
+.tres-fav-btn.fav {
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.tres-mistake-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tres-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  opacity: 0.8;
+}
+
+.tres-answer {
+  font-size: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border-strong);
+  color: var(--primary-lighter);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.wrong-answer {
+  border-left: 3px solid rgba(255, 80, 100, 0.5);
+}
+
+.correct-answer {
+  border-left: 3px solid rgba(70, 220, 140, 0.5);
+  color: rgba(70, 220, 140, 0.95);
+}
+
+/* Restart Button (Persistent Results Screen) */
+.tres-restart-btn {
+  padding: 1rem 1.8rem;
+  width: 100%;
+  max-width: 360px;
+  display: block;
+  margin: 2.4rem auto 0;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--primary-lighter);
+  background: linear-gradient(160deg, var(--primary-gloss), var(--surface-color));
+  border: 1px solid var(--glass-border-strong);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55), inset 0 0 20px var(--primary-gloss);
+  transition: all 0.25s ease;
+}
+
+.tres-restart-btn:active {
+  transform: scale(0.96);
+}
+
 /* ======================================= DICT SCREEN ====================================== */
 #dict{
   display:flex;
@@ -848,4 +1221,128 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
 .theme-item.active .theme-name {
   opacity: 1;
   color: var(--primary-color);
+}
+
+/* ======================================= RESPONSIVE: iPad PORTRAIT (768px+) ====================================== */
+@media (min-width: 768px) {
+  /* Unified centering for all screens - iPad portrait */
+  :where(#home, #cards, #dict, #settings) {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    max-width: 760px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  #test {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  :where(#test > .test-screen) {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Scroll containers centered */
+  :where(#tres_scroll, #dict_scroll, #settings_scroll) {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #tres_list, #dict_list {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  #settings_scroll {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  #settings_scroll > * {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Bottom nav centered */
+  .pw-bnb {
+    display: flex;
+    justify-content: center;
+  }
+
+  .bnb-shell {
+    max-width: 600px;
+  }
+}
+
+/* ======================================= RESPONSIVE: iPad LANDSCAPE (1024px+) ====================================== */
+@media (min-width: 1024px) {
+  /* Unified centering for all screens - iPad landscape */
+  :where(#home, #cards, #dict, #settings) {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    max-width: 1000px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  #test {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+
+  :where(#test > .test-screen) {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Scroll containers centered */
+  :where(#tres_scroll, #dict_scroll, #settings_scroll) {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  #tres_list, #dict_list {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  #settings_scroll {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  #settings_scroll > * {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  /* Bottom nav centered */
+  .pw-bnb {
+    display: flex;
+    justify-content: center;
+  }
+
+  .bnb-shell {
+    max-width: 700px;
+  }
 }

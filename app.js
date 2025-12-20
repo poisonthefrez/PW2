@@ -718,6 +718,7 @@ $("statsToggleBtn")?.addEventListener("click", () => {
 
 let testState = null;
 let testSessionCompletionCounted = false;
+let resultsPersisted = null; // Store test results across tab switches
 
 /** Быстрый helper для показа секции теста */
 function showTestMode(screenId) {
@@ -731,6 +732,12 @@ function showTestMode(screenId) {
 
 /** запуск теста с BNB */
 function startTestFlow() {
+    // If test results are already persisted, show them instead of restart dialog
+    if (resultsPersisted) {
+        renderPersistentResults();
+        return;
+    }
+
     if (!currentLessonKey) {
         alert("Сначала выбери словарь 📚");
         return;
@@ -830,6 +837,17 @@ function finishTestEngine() {
     const lesson = LESSONS[st.key];
     const total = st.results.length;
     const good = st.results.filter(r => r.chosen === r.correct).length;
+    const percentage = total > 0 ? Math.round((good / total) * 100) : 0;
+
+    // Store results for persistence across tab switches
+    resultsPersisted = {
+        lessonKey: st.key,
+        lessonName: lesson.name,
+        results: st.results,
+        good,
+        total,
+        percentage
+    };
 
     $("tres_title").textContent = lesson.name;
     $("tres_summary").innerHTML = `
@@ -837,39 +855,147 @@ function finishTestEngine() {
         Верных ответов: <b>${good}</b> из <b>${total}</b>
     `;
 
-    showTestMode("testSummaryScreen");
-}
-
-/** показать весь отчёт */
-function renderFullResults() {
-    const st = testState;
-    const box = $("tres_list");
-    const lesson = LESSONS[st.key];
-    box.innerHTML = "";
-
-    st.results.forEach(r => {
-        const item = lesson.items[r.idx];
-        box.innerHTML += `
-        <div class="result-item ${r.chosen === r.correct ? "correct" : "wrong"}">
-            <div class="question">${item.ru}</div>
-            <div>Ты ответила: <b>${r.chosen}</b></div>
-            <div>Правильно: <u>${item.en}</u></div>
-        </div>`;
-    });
-
     // Increment tests completed counter only once per session
     if (!testSessionCompletionCounted) {
         testSessionCompletionCounted = true;
         incrementTestsCompleted();
     }
 
+    showTestMode("testSummaryScreen");
+}
+
+/** показать персистентные результаты с прогресс-кольцом */
+function renderPersistentResults() {
+    if (!resultsPersisted) return;
+
+    const { lessonKey, lessonName, results, good, total, percentage } = resultsPersisted;
+    const lesson = LESSONS[lessonKey];
+
+    // Build progress ring SVG
+    const circumference = 282; // 2π × 45
+    const strokeDashoffset = circumference - (circumference * percentage) / 100;
+
+    // Render mistake cards only
+    const box = $("tres_list");
+    box.innerHTML = `
+        <!-- Summary Block -->
+        <div class="tres-summary-container">
+            <h2 class="tres-lesson-name">${lessonName}</h2>
+            
+            <div class="tres-progress-ring-wrapper">
+                <svg class="tres-progress-ring" width="140" height="140" viewBox="0 0 140 140">
+                    <circle cx="70" cy="70" r="45" class="tres-progress-bg"></circle>
+                    <circle cx="70" cy="70" r="45" class="tres-progress-fill" style="stroke-dashoffset: ${strokeDashoffset}px;"></circle>
+                </svg>
+                <div class="tres-progress-label">
+                    <span class="tres-percentage">${percentage}%</span>
+                    <span class="tres-progress-text">Правильных ответов</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Filter mistakes only
+    const mistakes = results.filter(r => r.chosen !== r.correct);
+
+    if (mistakes.length === 0) {
+        box.innerHTML += `
+            <div class="tres-perfect-message">
+                Идеально! Ошибок нет 🎉
+            </div>
+        `;
+    } else {
+        mistakes.forEach(r => {
+            const item = lesson.items[r.idx];
+            const favs = loadFavs(lessonKey);
+            const isFav = favs.includes(r.idx);
+
+            box.innerHTML += `
+                <div class="tres-mistake-card">
+                    <div class="tres-mistake-header">
+                        <div class="tres-mistake-word">${item.ru}</div>
+                        <button class="tres-fav-btn ${isFav ? 'fav' : ''}" data-lesson="${lessonKey}" data-idx="${r.idx}" title="${isFav ? 'Убрать из избранного' : 'Добавить в избранное'}">
+                            ${isFav ? '❤️' : '🤍'}
+                        </button>
+                    </div>
+                    <div class="tres-mistake-row">
+                        <span class="tres-label">Неправильно:</span>
+                        <span class="tres-answer wrong-answer">${r.chosen}</span>
+                    </div>
+                    <div class="tres-mistake-row">
+                        <span class="tres-label">Правильно:</span>
+                        <span class="tres-answer correct-answer">${item.en}</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Add retry button
+    box.innerHTML += `
+        <button id="tres_restart_btn" class="tres-restart-btn">Перезапустить тест 🔄</button>
+    `;
+
+    // Attach event listeners for favorites
+    document.querySelectorAll(".tres-fav-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const lessonKey = btn.dataset.lesson;
+            const idx = Number(btn.dataset.idx);
+            toggleResultFav(lessonKey, idx, btn);
+        });
+    });
+
+    // Attach restart listener
+    $("tres_restart_btn")?.addEventListener("click", () => {
+        resultsPersisted = null;
+        testSessionCompletionCounted = false;
+        initTestEngine();
+    });
+
     showTestMode("testResultScreen");
+}
+
+/** Toggle favorite from test result screen */
+function toggleResultFav(lessonKey, idx, btnElement) {
+    const favs = [...loadFavs(lessonKey)];
+    const i = favs.indexOf(idx);
+
+    if (i === -1) {
+        favs.push(idx);
+    } else {
+        favs.splice(i, 1);
+    }
+
+    saveFavs(lessonKey, favs);
+
+    // Update button state
+    const isFav = favs.includes(idx);
+    btnElement.classList.toggle("fav");
+    btnElement.textContent = isFav ? "❤️" : "🤍";
+    btnElement.title = isFav ? "Убрать из избранного" : "Добавить в избранное";
+
+    // Sync with cards and dict
+    renderFavoriteWordsPanel();
+}
+
+/** показать весь отчёт (legacy - kept for compatibility) */
+function renderFullResults() {
+    renderPersistentResults();
 }
 
 // события UI
 $("ts_start_btn")?.addEventListener("click", initTestEngine);
-$("tres_retry")?.addEventListener("click", initTestEngine);
-$("tres_retry_bottom")?.addEventListener("click", initTestEngine);
+$("tres_retry")?.addEventListener("click", () => {
+    resultsPersisted = null;
+    testSessionCompletionCounted = false;
+    initTestEngine();
+});
+$("tres_retry_bottom")?.addEventListener("click", () => {
+    resultsPersisted = null;
+    testSessionCompletionCounted = false;
+    initTestEngine();
+});
 $("tres_show_details")?.addEventListener("click", renderFullResults);
 
 
