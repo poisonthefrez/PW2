@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //   APP STATE
 // ============================
 const STORAGE_LESSON_KEY = "pw_current_lesson_key";
+const STORAGE_TESTS_COMPLETED_KEY = "pw_tests_completed";
 let currentLessonKey = localStorage.getItem(STORAGE_LESSON_KEY) || null;
 
 if (currentLessonKey && !LESSONS[currentLessonKey]) {
@@ -123,6 +124,110 @@ function switchTab(tab) {
 
     document.querySelectorAll(".bnb-item").forEach(b => {
         b.classList.toggle("is-active", b.dataset.tab === tab);
+    });
+}
+
+
+// ============================
+//   THEME SYSTEM
+// ============================
+const THEMES = {
+    burgundy: {
+        name: 'Burgundy',
+        color: '#ff7ea6',
+        root: 'theme-burgundy'
+    },
+    emerald: {
+        name: 'Emerald',
+        color: '#4aced5',
+        root: 'theme-emerald'
+    },
+    ocean: {
+        name: 'Ocean',
+        color: '#5eb3ff',
+        root: 'theme-ocean'
+    },
+    crimson: {
+        name: 'Crimson',
+        color: '#ff5555',
+        root: 'theme-crimson'
+    },
+    turquoise: {
+        name: 'Turquoise',
+        color: '#1ecccf',
+        root: 'theme-turquoise'
+    },
+    midnight: {
+        name: 'Midnight',
+        color: '#7fa8ff',
+        root: 'theme-midnight'
+    },
+    noir: {
+        name: 'Noir',
+        color: '#d97eff',
+        root: 'theme-noir'
+    },
+    sunset: {
+        name: 'Sunset',
+        color: '#ffa27b',
+        root: 'theme-sunset'
+    },
+    ice: {
+        name: 'Ice',
+        color: '#a8d5e5',
+        root: 'theme-ice'
+    },
+    space: {
+        name: 'Space',
+        color: '#9d9dff',
+        root: 'theme-space'
+    }
+};
+
+const STORAGE_THEME_KEY = "pw_selected_theme";
+
+function loadSelectedTheme() {
+    try {
+        const saved = localStorage.getItem(STORAGE_THEME_KEY);
+        return (saved && THEMES[saved]) ? saved : 'burgundy';
+    } catch {
+        return 'burgundy';
+    }
+}
+
+function saveSelectedTheme(themeKey) {
+    localStorage.setItem(STORAGE_THEME_KEY, themeKey);
+}
+
+function applyTheme(themeKey) {
+    const theme = THEMES[themeKey];
+    if (!theme) return;
+    
+    const root = document.documentElement;
+    
+    // Remove all theme classes
+    Object.values(THEMES).forEach(t => {
+        root.classList.remove(t.root);
+    });
+    
+    // Apply selected theme class
+    root.classList.add(theme.root);
+    
+    // Save preference
+    saveSelectedTheme(themeKey);
+    
+    // Update active highlight in UI
+    updateThemeGridUI(themeKey);
+}
+
+function updateThemeGridUI(activeTheme) {
+    document.querySelectorAll('.theme-item').forEach(item => {
+        const key = item.dataset.theme;
+        if (key === activeTheme) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
     });
 }
 
@@ -231,6 +336,36 @@ function updateHomeProgress() {
     if (elCards) elCards.textContent = count;
 }
 
+
+// ============================
+//   TESTS COMPLETED COUNTER
+// ============================
+function loadTestsCompleted() {
+    try {
+        const raw = localStorage.getItem(STORAGE_TESTS_COMPLETED_KEY);
+        const val = parseInt(raw, 10);
+        return Number.isFinite(val) && val >= 0 ? val : 0;
+    } catch {
+        return 0;
+    }
+}
+
+function saveTestsCompleted(count) {
+    localStorage.setItem(STORAGE_TESTS_COMPLETED_KEY, String(count));
+}
+
+function updateTestsCompletedUI() {
+    const count = loadTestsCompleted();
+    const el = $("stat_tests_done");
+    if (el) el.textContent = count;
+}
+
+function incrementTestsCompleted() {
+    const count = loadTestsCompleted();
+    const newCount = count + 1;
+    saveTestsCompleted(newCount);
+    updateTestsCompletedUI();
+}
 
 
 // ============================
@@ -582,6 +717,7 @@ $("statsToggleBtn")?.addEventListener("click", () => {
 // ============================
 
 let testState = null;
+let testSessionCompletionCounted = false;
 
 /** Быстрый helper для показа секции теста */
 function showTestMode(screenId) {
@@ -612,6 +748,9 @@ function startTestFlow() {
 /** формирование новой попытки */
 function initTestEngine() {
     const lesson = LESSONS[currentLessonKey];
+
+    // Reset completion flag for new test session
+    testSessionCompletionCounted = false;
 
     testState = {
         key: currentLessonKey,
@@ -718,6 +857,12 @@ function renderFullResults() {
         </div>`;
     });
 
+    // Increment tests completed counter only once per session
+    if (!testSessionCompletionCounted) {
+        testSessionCompletionCounted = true;
+        incrementTestsCompleted();
+    }
+
     showTestMode("testResultScreen");
 }
 
@@ -742,7 +887,7 @@ document.querySelectorAll(".bnb-item").forEach(btn => {
 //   HOME INIT
 // ============================
 function initHome() {
-    $("stat_tests_done").textContent = 0;
+    updateTestsCompletedUI();
 
     renderLessonList();
     renderLatestLesson();
@@ -811,6 +956,37 @@ function renderDict() {
 
 
 // ============================
+//   SETTINGS SCREEN
+// ============================
+function renderSettings() {
+    const grid = $("themeGrid");
+    if (!grid) return;
+    
+    grid.innerHTML = "";
+    const currentTheme = loadSelectedTheme();
+    
+    Object.entries(THEMES).forEach(([key, theme]) => {
+        const item = document.createElement("div");
+        item.className = `theme-item ${key === currentTheme ? 'active' : ''}`;
+        item.dataset.theme = key;
+        
+        item.innerHTML = `
+            <div class="theme-preview" style="background-color: ${theme.color}"></div>
+            <div class="theme-name">${theme.name}</div>
+        `;
+        
+        item.addEventListener("click", () => {
+            applyTheme(key);
+        });
+        
+        grid.appendChild(item);
+    });
+    
+    switchTab("settings");
+}
+
+
+// ============================
 //   EVENTS
 // ============================
 $("card")?.addEventListener("click", flipCard);
@@ -825,6 +1001,8 @@ document.querySelectorAll(".bnb-item").forEach(btn => {
             startCards();
         } else if (btn.dataset.tab === "dict") {
             renderDict();
+        } else if (btn.dataset.tab === "settings") {
+            renderSettings();
         } else {
             switchTab(btn.dataset.tab);
         }
@@ -835,5 +1013,8 @@ document.querySelectorAll(".bnb-item").forEach(btn => {
 // ============================
 //   INIT
 // ============================
+// Apply saved theme on page load
+applyTheme(loadSelectedTheme());
+
 initHome();
 switchTab("home");
