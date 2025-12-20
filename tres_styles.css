@@ -1,0 +1,24 @@
+/* Retry button for test result screen */
+.tres-retry-btn{
+  padding:0.95rem 1.6rem;
+  width:100%;
+  max-width:360px;
+  display:block;
+  margin:2rem auto;
+  border-radius:16px;
+  font-size:1.05rem;
+  font-weight:600;
+  letter-spacing:0.3px;
+  text-align:center;
+  cursor:pointer;
+  color:#ffe8f6;
+  background:linear-gradient(160deg,rgba(255,110,195,.14),rgba(11,0,12,.9));
+  border:1px solid rgba(255,130,200,.25);
+  backdrop-filter:blur(14px);
+  box-shadow:0 6px 22px rgba(0,0,0,.55),inset 0 0 20px rgba(255,70,160,.06);
+  transition:.25s ease;
+}
+
+.tres-retry-btn:active{
+  transform:scale(.96);
+}
