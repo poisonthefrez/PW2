@@ -434,14 +434,14 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
 /* ======================================= BOTTOM NAVIGATION ====================================== */
 .pw-bnb{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 16px calc(16px + env(safe-area-inset-bottom));pointer-events:none;z-index:999;animation:bnbFade .48s cubic-bezier(.16,1,.3,1)}
 @keyframes bnbFade{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.bnb-shell{width:100%;max-width:520px;pointer-events:auto;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--glass-bg);backdrop-filter:blur(18px)saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
-.bnb-item{flex:1;height:48px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;font-size:.75rem;border-radius:999px;color:rgba(255,255,255,.82);transition:background .18s,transform .14s,color .18s}
+.bnb-shell{width:100%;max-width:520px;pointer-events:auto;display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:var(--glass-bg);backdrop-filter:blur(18px)saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
+.bnb-item{flex:1;height:42px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;font-size:.72rem;border-radius:999px;color:rgba(255,255,255,.82);transition:background .18s,transform .14s,color .18s}
 .bnb-item:active{transform:translateY(1px)scale(.97)}
 .bnb-item.is-active{background:linear-gradient(145deg,var(--surface-light),var(--surface-color));color:var(--primary-light);box-shadow:0 0 0 1px var(--primary-glow),0 8px 22px rgba(0,0,0,.9),0 0 14px var(--border-glow)}
-.bnb-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.1;fill:none;transition:.22s}
+.bnb-icon svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.2;fill:none;transition:.22s}
 .bnb-item.is-active .bnb-icon svg{filter:drop-shadow(0 0 4px var(--primary-glow))}
-.bnb-label{font-size:.7rem;opacity:.92}
-.bnb-item.is-active .bnb-label{font-size:.74rem;font-weight:600}
+.bnb-label{font-size:.68rem;opacity:.92}
+.bnb-item.is-active .bnb-label{font-size:.72rem;font-weight:600}
 @supports(padding-bottom:env(safe-area-inset-bottom)){.pw-bnb{padding-bottom:calc(14px + env(safe-area-inset-bottom))}}
 /* ======================================= iPad Landscape ====================================== */
 @media (min-width:820px){
@@ -585,7 +585,7 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   transition:.25s ease;
 }
 .test-main-btn:active{transform:scale(.95)}
-
+.tres-restart-btn {margin-top: 1.5rem;}
 #tt_options{
   display:flex;
   flex-direction:column;
@@ -1139,8 +1139,8 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   max-width: 420px;
   padding: 0 1rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
   align-items: start;
 }
 
@@ -1148,58 +1148,63 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  justify-content: center;
+  gap: 0;
   cursor: pointer;
-  padding: 0.8rem;
-  border-radius: 16px;
-  transition: all 0.25s ease;
+  padding: 1.4rem 0.8rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  min-height: 90px;
+  position: relative;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  transition: background .18s, color .18s, border-color .25s, box-shadow .25s;
 }
 
 .theme-preview {
-  width: 72px;
-  height: 72px;
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
-  border: 3px solid transparent;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-}
-
-.theme-item.active .theme-preview {
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25),
-              0 6px 18px rgba(0, 0, 0, 0.45);
-  transform: scale(1.08);
-}
-
-.theme-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-  text-align: center;
-  letter-spacing: 0.3px;
-  opacity: 0.85;
+  opacity: 0.06;
+  pointer-events: none;
   transition: opacity 0.25s ease;
 }
 
-.theme-item.active .theme-name {
-  opacity: 1;
-  color: var(--primary-color);
+.theme-item.active .theme-preview {
+  opacity: 0.12;
+}
+
+.theme-item.active {
+  background: linear-gradient(145deg, var(--surface-light), var(--surface-color));
+  color: var(--primary-light);
+  border-color: var(--primary-glow);
+  box-shadow: 0 0 0 1px var(--primary-glow), 0 8px 22px rgba(0, 0, 0, 0.9), 0 0 14px var(--border-glow);
+}
+
+.theme-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: inherit;
+  text-align: center;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+  transition: opacity 0.25s ease, color 0.25s ease;
+  position: relative;
+  z-index: 1;
 }
 
 /* ======================================= RESPONSIVE: iPad PORTRAIT (768px+) ====================================== */
 @media (min-width: 768px) {
-  /* Unified centering for all screens - iPad portrait */
+  .theme-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
   :where(#home, #cards, #dict, #settings) {
     padding-left: 20px !important;
     padding-right: 20px !important;
     max-width: 760px;
     margin-left: auto !important;
     margin-right: auto !important;
-  }
-
-  #test {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
   }
 
   :where(#test > .test-screen) {

@@ -977,10 +977,12 @@ function renderFullResults() {
 
 // события UI
 $("ts_start_btn")?.addEventListener("click", initTestEngine);
-$("tres_retry")?.addEventListener("click", () => {
-    resultsPersisted = null;
-    testSessionCompletionCounted = false;
-    initTestEngine();
+document.querySelectorAll(".tres-restart-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        resultsPersisted = null;
+        testSessionCompletionCounted = false;
+        initTestEngine();
+    });
 });
 $("tres_show_details")?.addEventListener("click", renderFullResults);
 
@@ -1077,14 +1079,29 @@ function renderSettings() {
     grid.innerHTML = "";
     const currentTheme = loadSelectedTheme();
     
+    const themeNameMap = {
+        burgundy: '🍷 Бордовый',
+        emerald: '🌲 Изумруд',
+        ocean: '🌊 Океан',
+        crimson: '🔥 Алый',
+        turquoise: '💎 Бирюзовый',
+        midnight: '🌙 Полуночный',
+        noir: '🍇 Ночной фиолетовый',
+        sunset: '🌅 Закат',
+        ice: '❄️ Лёд',
+        space: '🌌 Космос'
+    };
+    
     Object.entries(THEMES).forEach(([key, theme]) => {
         const item = document.createElement("div");
         item.className = `theme-item ${key === currentTheme ? 'active' : ''}`;
         item.dataset.theme = key;
         
+        const displayName = themeNameMap[key] || theme.name;
+        
         item.innerHTML = `
             <div class="theme-preview" style="background-color: ${theme.color}"></div>
-            <div class="theme-name">${theme.name}</div>
+            <div class="theme-name">${displayName}</div>
         `;
         
         item.addEventListener("click", () => {

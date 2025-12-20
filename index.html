@@ -28,7 +28,7 @@
     <div id="pageloader" class="pw-loader">
         <div class="pw-loader-inner">
             <div class="pw-avatar-wrap">
-                <img src="img/avatar.png" alt="avatar">
+                <img src="img/avatar.jpg" alt="avatar">
                 <div class="pw-ring"></div>
             </div>
             <div class="pw-app-name">Pocketwords</div>
@@ -163,7 +163,7 @@
 
             <div class="test-summary-body">
                 <p id="tres_summary" class="tres_summary"></p>
-                <button id="tres_retry" class="test-main-btn">Пройти заново</button>
+                <button class="tres-restart-btn test-main-btn">Пройти заново</button>
                 <button id="tres_show_details" class="test-main-btn">Посмотреть ответы 📚</button>
             </div>
 
@@ -173,6 +173,7 @@
         <div id="testResultScreen" class="test-screen">
             <div id="tres_scroll">
                 <div id="tres_list"></div>
+                <button class="tres-restart-btn test-main-btn">Пройти заново</button>
             </div>
         </div>
 
@@ -199,7 +200,7 @@
             <button class="bnb-item is-active" data-tab="home">
                 <span class="bnb-icon">
                     <svg viewBox="0 0 24 24">
-                        <path d="M3 10.5L12 3l9 7.5v9H4z" />
+                        <path d="M4 13v6c0 1.2 1 2 2 2h12c1 0 2-.8 2-2v-6M3 11l9-7 9 7M8 16v3M16 16v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                     </svg>
                 </span>
                 <span class="bnb-label">Меню</span>
@@ -208,8 +209,8 @@
             <button class="bnb-item disabled" data-tab="cards">
                 <span class="bnb-icon">
                     <svg viewBox="0 0 24 24">
-                        <rect x="3" y="6" width="13" height="14" />
-                        <rect x="8" y="4" width="13" height="14" />
+                        <rect x="3.5" y="6.5" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="2" fill="none" />
+                        <rect x="8.5" y="4.5" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="2" fill="none" />
                     </svg>
                 </span>
                 <span class="bnb-label">Карточки</span>
@@ -218,8 +219,8 @@
             <button class="bnb-item disabled" data-tab="test">
                 <span class="bnb-icon">
                     <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M9 12l2 2 4-4" />
+                        <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2" fill="none" />
+                        <path d="M9 12.5l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                     </svg>
                 </span>
                 <span class="bnb-label">Тестик</span>
@@ -228,8 +229,7 @@
             <button class="bnb-item disabled" data-tab="dict">
                 <span class="bnb-icon">
                     <svg viewBox="0 0 24 24">
-                        <path d="M4 5h12a4 4 0 0 1 0 8H6v7z" />
-                        <path d="M6 11h8" />
+                        <path d="M4 5.5c0-.8.7-1.5 1.5-1.5h10c2 0 3.5 1.5 3.5 3.5v10c0 2-1.5 3.5-3.5 3.5H5.5c-.8 0-1.5-.7-1.5-1.5M6 10h8M6 14.5h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                     </svg>
                 </span>
                 <span class="bnb-label">Словарик</span>
@@ -238,8 +238,8 @@
             <button class="bnb-item" data-tab="settings">
                 <span class="bnb-icon">
                     <svg viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none" />
-                        <path d="M12 7.5V5.5M12 18.5v2M18.5 12h2M5.5 12h2M15.5 8.5l1.4-1.4M8.5 15.5l1.4-1.4M15.5 15.5l1.4 1.4M8.5 8.5L7.1 7.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" />
+                        <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="2" fill="none" />
+                        <path d="M12 5v2.5M12 16.5v2.5M18.5 12h2.5M3 12h2.5M16 8l1.8-1.8M6.2 17.8L8 16M16 16l1.8 1.8M6.2 6.2L8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                     </svg>
                 </span>
                 <span class="bnb-label">Настройки</span>
