@@ -466,14 +466,23 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   border:1px solid rgba(255,140,200,.18);
   background:rgba(10,0,10,.4);
   display:flex;
-  flex-direction:column;
-  gap:0.4rem;
+  flex-direction:row;
+  align-items:center;
+  justify-content:space-between;
+  gap:0.8rem;
   transition:.25s ease;
 }
 
 .dict-item:active{
   transform:scale(0.98);
   border-color:rgba(255,140,200,.35);
+}
+
+.dict-item-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:0.4rem;
 }
 
 .dict-item-ru{
@@ -489,6 +498,30 @@ html.lock,body.lock{overflow:hidden;touch-action:none}
   color:rgba(255,200,230,.75);
   line-height:1.4;
   margin:0;
+}
+
+.dict-favbt{
+  font-size:1.4rem;
+  font-weight:600;
+  padding:0.5rem 0.7rem;
+  border-radius:8px;
+  cursor:pointer;
+  background:rgba(30,2,12,.7);
+  border:1px solid rgba(255,140,200,.35);
+  color:#fff;
+  backdrop-filter:blur(12px);
+  transition:.22s ease;
+  box-shadow:0 6px 16px rgba(0,0,0,.55);
+  flex-shrink:0;
+}
+
+.dict-favbt:active{
+  transform:scale(.96);
+}
+
+.dict-favbt.fav{
+  color:#ff6e8f;
+  border-color:rgba(255,120,150,.7);
 }
 
 .stats-actions{

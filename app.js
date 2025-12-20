@@ -773,12 +773,36 @@ function renderDict() {
     const box = $("dict_list");
     box.innerHTML = "";
 
-    lesson.items.forEach(item => {
+    const favs = loadFavs(currentLessonKey);
+
+    lesson.items.forEach((item, idx) => {
+        const isFav = favs.includes(idx);
         box.innerHTML += `
         <div class="dict-item">
-            <div class="dict-item-ru">${item.ru}</div>
-            <div class="dict-item-en">${item.en}</div>
+            <div class="dict-item-content">
+                <div class="dict-item-ru">${item.ru}</div>
+                <div class="dict-item-en">${item.en}</div>
+            </div>
+            <button class="dict-favbt ${isFav ? 'fav' : ''}" data-idx="${idx}">♡</button>
         </div>`;
+    });
+
+    // Add event listeners to heart buttons
+    box.querySelectorAll(".dict-favbt").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            const idx = Number(btn.dataset.idx);
+            const favs = [...loadFavs(currentLessonKey)];
+            const i = favs.indexOf(idx);
+
+            if (i === -1) favs.push(idx);
+            else favs.splice(i, 1);
+
+            saveFavs(currentLessonKey, favs);
+
+            btn.classList.toggle("fav");
+            renderFavoriteWordsPanel();
+        });
     });
 
     switchTab("dict");
