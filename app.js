@@ -760,6 +760,30 @@ function initHome() {
     updateBNBState();
 }
 
+// ============================
+//   DICT SCREEN
+// ============================
+function renderDict() {
+    if (!currentLessonKey) {
+        alert("Сначала выбери словарь 📚");
+        return;
+    }
+
+    const lesson = LESSONS[currentLessonKey];
+    const box = $("dict_list");
+    box.innerHTML = "";
+
+    lesson.items.forEach(item => {
+        box.innerHTML += `
+        <div class="dict-item">
+            <div class="dict-item-ru">${item.ru}</div>
+            <div class="dict-item-en">${item.en}</div>
+        </div>`;
+    });
+
+    switchTab("dict");
+}
+
 
 // ============================
 //   EVENTS
@@ -772,7 +796,13 @@ $("favBtn")?.addEventListener("click", toggleFav);
 document.querySelectorAll(".bnb-item").forEach(btn => {
     btn.addEventListener("click", () => {
         if (btn.classList.contains("disabled")) return;
-        btn.dataset.tab === "cards" ? startCards() : switchTab(btn.dataset.tab);
+        if (btn.dataset.tab === "cards") {
+            startCards();
+        } else if (btn.dataset.tab === "dict") {
+            renderDict();
+        } else {
+            switchTab(btn.dataset.tab);
+        }
     });
 });
 
