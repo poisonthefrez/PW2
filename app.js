@@ -914,8 +914,8 @@ function renderPersistentResults() {
                 <div class="tres-mistake-card">
                     <div class="tres-mistake-header">
                         <div class="tres-mistake-word">${item.ru}</div>
-                        <button class="tres-fav-btn ${isFav ? 'fav' : ''}" data-lesson="${lessonKey}" data-idx="${r.idx}" title="${isFav ? 'Убрать из избранного' : 'Добавить в избранное'}">
-                            ${isFav ? '❤️' : '🤍'}
+                        <button class="dict-favbt tres-fav-btn ${isFav ? 'fav' : ''}" data-lesson="${lessonKey}" data-idx="${r.idx}" title="${isFav ? 'Убрать из избранного' : 'Добавить в избранное'}">
+                            ♡
                         </button>
                     </div>
                     <div class="tres-mistake-row">
@@ -931,10 +931,6 @@ function renderPersistentResults() {
         });
     }
 
-    // Add retry button
-    box.innerHTML += `
-        <button id="tres_restart_btn" class="tres-restart-btn">Перезапустить тест 🔄</button>
-    `;
 
     // Attach event listeners for favorites
     document.querySelectorAll(".tres-fav-btn").forEach(btn => {
@@ -946,12 +942,7 @@ function renderPersistentResults() {
         });
     });
 
-    // Attach restart listener
-    $("tres_restart_btn")?.addEventListener("click", () => {
-        resultsPersisted = null;
-        testSessionCompletionCounted = false;
-        initTestEngine();
-    });
+    // (duplicate restart button removed — `tres_retry` is the single restart control)
 
     showTestMode("testResultScreen");
 }
@@ -972,7 +963,7 @@ function toggleResultFav(lessonKey, idx, btnElement) {
     // Update button state
     const isFav = favs.includes(idx);
     btnElement.classList.toggle("fav");
-    btnElement.textContent = isFav ? "❤️" : "🤍";
+    btnElement.textContent = "♡";
     btnElement.title = isFav ? "Убрать из избранного" : "Добавить в избранное";
 
     // Sync with cards and dict
@@ -987,11 +978,6 @@ function renderFullResults() {
 // события UI
 $("ts_start_btn")?.addEventListener("click", initTestEngine);
 $("tres_retry")?.addEventListener("click", () => {
-    resultsPersisted = null;
-    testSessionCompletionCounted = false;
-    initTestEngine();
-});
-$("tres_retry_bottom")?.addEventListener("click", () => {
     resultsPersisted = null;
     testSessionCompletionCounted = false;
     initTestEngine();

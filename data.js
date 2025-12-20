@@ -141,5 +141,5 @@ const LESSONS = {
       { ru: "Настаивать на", en: "Insist on" },
       { ru: "Хвастаться о", en: "Boast about" }
     ]
-  },
+  }
 };
