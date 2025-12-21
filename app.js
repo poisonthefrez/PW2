@@ -658,9 +658,11 @@ function renderStatsCircles() {
     // 2. Сортировка — последний добавленный сверху
     dicts.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    // 3. 4 свежих
-    const recent = dicts.slice(0,4);
-    const others = dicts.slice(4);
+    // 3. visible recent items count depends on screen size (media query)
+    const isPhone = window.matchMedia('(max-width: 767px)').matches;
+    const VISIBLE_RECENT = isPhone ? 4 : 6;
+    const recent = dicts.slice(0, VISIBLE_RECENT);
+    const others = dicts.slice(VISIBLE_RECENT);
 
     // 4. Рендер блоков
     recent.forEach(d => recentBox.appendChild(createStatsCircle(d)));
@@ -720,6 +722,11 @@ let testState = null;
 let testSessionCompletionCounted = false;
 let resultsPersisted = null; // Store test results across tab switches
 
+// TEST STATE FLAGS (single source of truth)
+let testInProgress = false; // true once test starts and before it ends
+let testLocked = false;     // true when test should not reset on navigation
+let testFinished = false;   // true after results are shown
+
 /** Быстрый helper для показа секции теста */
 function showTestMode(screenId) {
     // блокируем все .test-screen
@@ -738,6 +745,15 @@ function startTestFlow() {
         return;
     }
 
+    // If a test is currently in progress (user navigated away and back), resume it
+    if (testInProgress && testState) {
+        // Ensure UI reflects the running test and show current question
+        renderTestQuestionUI();
+        updateTestUIState();
+        showTestMode("testRunScreen");
+        return;
+    }
+
     if (!currentLessonKey) {
         alert("Сначала выбери словарь 📚");
         return;
@@ -749,6 +765,7 @@ function startTestFlow() {
     $("ts_question").textContent = "Приступаем к тесту?";
     $("ts_start_btn").textContent = "Начать тестик 💞";
 
+    updateTestUIState();
     showTestMode("testStartScreen");
 }
 
@@ -765,6 +782,12 @@ function initTestEngine() {
         cur: 0,
         results: []
     };
+
+    // mark test state flags
+    testInProgress = true;
+    testLocked = true;
+    testFinished = false;
+    updateTestUIState();
 
     $("tt_lesson_name").textContent = lesson.name;
     renderTestQuestionUI();
@@ -848,6 +871,12 @@ function finishTestEngine() {
         total,
         percentage
     };
+
+    // update flags: test finished -> lock remains true
+    testInProgress = false;
+    testFinished = true;
+    testLocked = true;
+    updateTestUIState();
 
     $("tres_title").textContent = lesson.name;
     $("tres_summary").innerHTML = `
@@ -947,6 +976,52 @@ function renderPersistentResults() {
     showTestMode("testResultScreen");
 }
 
+
+/** Update small UI bits depending on test state (skip button visibility etc.) */
+function updateTestUIState() {
+    const skipBtn = $('testSkipBtn');
+    if (skipBtn) {
+        if (testInProgress && !testFinished) skipBtn.classList.remove('hidden');
+        else skipBtn.classList.add('hidden');
+        // ensure pointer events enabled
+        skipBtn.style.pointerEvents = (testInProgress && !testFinished) ? 'auto' : 'none';
+    }
+}
+
+
+/** Full manual reset of test state (only allowed from manual restart) */
+function resetTestFully() {
+    testState = null;
+    resultsPersisted = null;
+    testSessionCompletionCounted = false;
+
+    testInProgress = false;
+    testLocked = false;
+    testFinished = false;
+
+    updateTestUIState();
+}
+
+
+/** Skip the entire test: mark all remaining unanswered as skipped and finish */
+function skipTestFlow() {
+    if (!testState || !testInProgress || testFinished) return;
+
+    const st = testState;
+    const lesson = LESSONS[st.key];
+
+    // For remaining questions append skipped answers
+    for (let i = st.cur; i < st.order.length; i++) {
+        const idx = st.order[i];
+        const correct = lesson.items[idx].en;
+        st.results.push({ idx, chosen: 'пропущено', correct });
+    }
+
+    // Move cursor to end and finish
+    st.cur = st.order.length;
+    finishTestEngine();
+}
+
 /** Toggle favorite from test result screen */
 function toggleResultFav(lessonKey, idx, btnElement) {
     const favs = [...loadFavs(lessonKey)];
@@ -979,12 +1054,17 @@ function renderFullResults() {
 $("ts_start_btn")?.addEventListener("click", initTestEngine);
 document.querySelectorAll(".tres-restart-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-        resultsPersisted = null;
-        testSessionCompletionCounted = false;
+        // full manual restart: clears all test progress and unlocks
+        resetTestFully();
         initTestEngine();
     });
 });
 $("tres_show_details")?.addEventListener("click", renderFullResults);
+
+// Skip button (top-right) — finishes test early
+$("testSkipBtn")?.addEventListener("click", () => {
+    skipTestFlow();
+});
 
 
 /** Подключение к BNB (не ломаем общий слушатель!) */
