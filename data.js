@@ -146,7 +146,7 @@ const LESSONS = {
     ]
   },
 
-  const crimeAndJustice = {
+  crimeAndJustice = {
     name: 'Преступление и правосудие ⚖️',
     description: 'Закон, правонарушения, наказания',
     timestamp: 1732730000000,
