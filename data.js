@@ -144,5 +144,47 @@ const LESSONS = {
       { ru: "Отменить планы", en: "Cancel plans" },
       { ru: "Выгорание", en: "Burnout" }
     ]
+  },
+  crimeAndJustice: {
+    name: 'Преступление и правосудие ⚖️',
+    description: 'Закон, правонарушения, наказания',
+    timestamp: 1732730000000,
+    items: [
+      { ru: "Неожиданно", en: "Out of the blue" },
+      { ru: "Отправить оплату", en: "Send a fee" },
+      { ru: "Обман", en: "Scam" },
+      { ru: "Мошенник", en: "Fraudster" },
+      { ru: "Доверчивые люди", en: "Gullible people" },
+      { ru: "Виновный", en: "Culprits" },
+      { ru: "Вламываться в", en: "Break into" },
+      { ru: "Поймать с поличным", en: "Catch red-handed" },
+      { ru: "Давать показания", en: "Give evidence" },
+      { ru: "Выхватить телефон", en: "Grab a phone" },
+      { ru: "Угрожать", en: "Threaten" },
+      { ru: "Сознаться в преступлении", en: "Confess to the crime" },
+      { ru: "Тюремный срок", en: "Prison sentence" },
+      { ru: "Получить синяк", en: "Bruise" },
+      { ru: "Вытереть, стереть", en: "Wipe off" },
+      { ru: "Отвлекать", en: "Distract" },
+      { ru: "Отправиться под суд", en: "Take to court" },
+      { ru: "Нарушение ПДД", en: "Driving offence" },
+      { ru: "Пожизненное заключение", en: "Life sentence" },
+      { ru: "Признать виновным", en: "Find guilty" },
+      { ru: "Свидетель", en: "Witness" },
+      { ru: "Оплатить штраф", en: "Pay a fine" },
+      { ru: "Преследовать", en: "Chase after" },
+      { ru: "Скрыться с деньгами", en: "Make off with the money" },
+      { ru: "Повестись на", en: "Fall for" },
+      { ru: "Так называемый прохожий", en: "So-called passer by" },
+      { ru: "Развести, обмануть", en: "Take for a ride" },
+      { ru: "Грабить банк", en: "Rob" },
+      { ru: "Грабить дом", en: "Burgle" },
+      { ru: "Грабить на улице", en: "Mug" },
+      { ru: "Красть из магазина", en: "Shoplift" },
+      { ru: "Грабить", en: "Steal" },
+      { ru: "Портить что-то", en: "Vandalise" },
+      { ru: "Украсть человека", en: "Kidnap" },
+      { ru: "Жертва", en: "Victim" }
+    ]
   }
 };
