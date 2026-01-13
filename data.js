@@ -148,7 +148,7 @@ const LESSONS = {
   crimeAndJustice: {
     name: 'Преступление и правосудие ⚖️',
     description: 'Закон, правонарушения, наказания',
-    timestamp: 1732730000000,
+    timestamp: 1768324800000,
     items: [
       { ru: "Неожиданно", en: "Out of the blue" },
       { ru: "Отправить оплату", en: "Send a fee" },
