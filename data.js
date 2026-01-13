@@ -2,7 +2,7 @@ const LESSONS = {
   airport: {
     name: 'Аэропорт ✈️',
     description: 'Регистрация, безопасность, перелёты',
-    timestamp: 1732700000000,
+    timestamp: 1,
     items: [
       { ru: "Аэропорт", en: "Airport" },
       { ru: "Регистрация на рейс", en: "Check-in" },
@@ -28,7 +28,7 @@ const LESSONS = {
   restaurant: {
     name: 'Ресторан 🍽️',
     description: 'Заказ еды, сервис, жалобы',
-    timestamp: 1732705000000,
+    timestamp: 2,
     items: [
       { ru: "Ресторан", en: "Restaurant" },
       { ru: "Забронировать столик", en: "Book a table" },
@@ -54,7 +54,7 @@ const LESSONS = {
   shop: {
     name: 'Магазин 🛍️',
     description: 'Покупки, возвраты, выбор',
-    timestamp: 1732710000000,
+    timestamp: 3,
     items: [
       { ru: "Магазин", en: "Shop" },
       { ru: "Цена", en: "Price" },
@@ -79,7 +79,7 @@ const LESSONS = {
   library: {
     name: 'Библиотека 📚',
     description: 'Чтение, учёба, исследования',
-    timestamp: 1732715000000,
+    timestamp: 4,
     items: [
       { ru: "Библиотека", en: "Library" },
       { ru: "Записаться", en: "Register" },
@@ -102,7 +102,7 @@ const LESSONS = {
   transport: {
     name: 'Транспорт 🚍',
     description: 'Город, маршруты, проблемы',
-    timestamp: 1732720000000,
+    timestamp: 5,
     items: [
       { ru: "Общественный транспорт", en: "Public transport" },
       { ru: "Автобус", en: "Bus" },
@@ -126,7 +126,7 @@ const LESSONS = {
   dailyLife: {
     name: 'Повседневная жизнь ☕',
     description: 'Рутина, привычки, планы',
-    timestamp: 1732725000000,
+    timestamp: 6,
     items: [
       { ru: "Просыпаться", en: "Wake up" },
       { ru: "Засыпать", en: "Fall asleep" },
@@ -148,7 +148,7 @@ const LESSONS = {
   crimeAndJustice: {
     name: 'Преступление и правосудие ⚖️',
     description: 'Закон, правонарушения, наказания',
-    timestamp: 1768324800000,
+    timestamp: 7,
     items: [
       { ru: "Неожиданно", en: "Out of the blue" },
       { ru: "Отправить оплату", en: "Send a fee" },
